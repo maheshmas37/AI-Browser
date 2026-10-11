@@ -633,6 +633,7 @@
     // AI voice reply using the browser's built-in Text-to-Speech.
     let lastAIReply = "";
     let voiceReplyEnabled = true;
+    let speechRetryUsed = false;
 
     function getSpeechLocale() {
       const language = $("language").value;
@@ -652,41 +653,87 @@
       return locales[language] || "en-IN";
     }
 
-    function speakReply(text) {
-      if (!("speechSynthesis" in window) || !text) {
-        $("voiceReplyStatus").textContent =
-          "Voice output is not supported in this browser. Try Google Chrome.";
+    function speakReply(text, retryWithoutVoice = false) {
+      const status = $("voiceReplyStatus");
+      const cleanText = String(text || "").trim();
+
+      if (!cleanText) {
+        status.textContent = "There is no AI reply to play yet.";
+        return;
+      }
+      if (!("speechSynthesis" in window) ||
+          typeof SpeechSynthesisUtterance === "undefined") {
+        status.textContent =
+          "Voice output is not supported here. Please open NOVA AI in the latest Google Chrome.";
         return;
       }
 
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = getSpeechLocale();
-      utterance.rate = 1;
-      utterance.pitch = 1;
+      const synth = window.speechSynthesis;
+      try {
+        synth.cancel();
+        // Resetting the queue before speaking helps Chromium recover from a stuck speech queue.
+        const utterance = new SpeechSynthesisUtterance(cleanText);
+        utterance.lang = getSpeechLocale();
+        utterance.rate = 0.95;
+        utterance.pitch = 1;
 
-      const voices = window.speechSynthesis.getVoices();
-      const localePrefix = utterance.lang.toLowerCase().split("-")[0];
-      const matchingVoice = voices.find((voice) =>
-        voice.lang && voice.lang.toLowerCase().startsWith(localePrefix)
-      );
-      if (matchingVoice) utterance.voice = matchingVoice;
+        const voices = synth.getVoices();
+        const localePrefix = utterance.lang.toLowerCase().split("-")[0];
+        const matchingVoice = voices.find((voice) =>
+          voice.lang && voice.lang.toLowerCase().split("-")[0] === localePrefix
+        ) || voices.find((voice) =>
+          voice.lang && voice.lang.toLowerCase().startsWith(localePrefix)
+        );
 
-      utterance.onstart = () => {
-        $("voiceReplyStatus").textContent =
-          "Speaking reply (" + utterance.lang + ")...";
-      };
-      utterance.onend = () => {
-        $("voiceReplyStatus").textContent =
-          "Voice reply finished. You can replay it with Speak Last Reply.";
-      };
-      utterance.onerror = (event) => {
-        $("voiceReplyStatus").textContent =
-          "Voice playback error: " + event.error +
-          ". Check Chrome sound and available language voices.";
-      };
+        // If the selected language voice is causing a failure, retry once with Chrome's default voice.
+        if (matchingVoice && !retryWithoutVoice) {
+          utterance.voice = matchingVoice;
+        }
 
-      window.speechSynthesis.speak(utterance);
+        utterance.onstart = () => {
+          status.textContent = "Speaking reply (" + utterance.lang + ")...";
+        };
+        utterance.onend = () => {
+          status.textContent =
+            "Voice reply finished. You can replay it with Speak Last Reply.";
+        };
+        utterance.onerror = (event) => {
+          const errorName = event && event.error ? event.error : "unknown";
+          if (matchingVoice && !retryWithoutVoice &&
+              !["canceled", "interrupted"].includes(errorName)) {
+            status.textContent =
+              "Selected language voice failed; trying Chrome's default voice...";
+            speakReply(cleanText, true);
+            return;
+          }
+          status.textContent =
+            "Voice playback failed (" + errorName + "). Try Speak Last Reply, check Windows sound, and install/enable a voice for " +
+            utterance.lang + " in your system speech settings.";
+        };
+
+        status.textContent = "Preparing voice reply...";
+        // Give cancel() a moment to clear any previous utterance from the queue.
+        window.setTimeout(() => {
+          try {
+            synth.speak(utterance);
+            // Some browser/OS combinations leave the queue paused.
+            if (synth.paused) synth.resume();
+          } catch (error) {
+            status.textContent =
+              "Could not start voice playback. Refresh the page and try Speak Last Reply.";
+          }
+        }, 120);
+      } catch (error) {
+        status.textContent =
+          "Voice playback could not start. Refresh the page and try Speak Last Reply.";
+      }
+    }
+
+    // Load voice metadata when Chrome makes its installed voices available.
+    if ("speechSynthesis" in window) {
+      window.speechSynthesis.onvoiceschanged = () => {
+        // Voice list is refreshed by the browser; speechReply reads it when called.
+      };
     }
 
     $("speakAgainButton").addEventListener("click", () => {
