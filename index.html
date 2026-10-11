@@ -427,6 +427,11 @@
             Send
           </button>
         </form>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+          <button class="btn" id="speakAgainButton" type="button">🔊 Speak Last Reply</button>
+          <button class="btn" id="stopSpeechButton" type="button">⏹ Stop Voice</button>
+        </div>
+        <p id="voiceReplyStatus" aria-live="polite">Automatic voice reply is ON. Voice availability depends on your browser and installed voices.</p>
         <p>AI responses require an active Cloudflare Worker and Gemini API secret.</p>
       </article>
 
@@ -625,6 +630,78 @@
       recognition.start();
     });
 
+    // AI voice reply using the browser's built-in Text-to-Speech.
+    let lastAIReply = "";
+    let voiceReplyEnabled = true;
+
+    function getSpeechLocale() {
+      const language = $("language").value;
+      const locales = {
+        English: "en-IN",
+        Telugu: "te-IN",
+        Hindi: "hi-IN",
+        Kannada: "kn-IN",
+        Tamil: "ta-IN",
+        Malayalam: "ml-IN",
+        Bengali: "bn-IN",
+        Marathi: "mr-IN",
+        Spanish: "es-ES",
+        French: "fr-FR",
+        Arabic: "ar-SA"
+      };
+      return locales[language] || "en-IN";
+    }
+
+    function speakReply(text) {
+      if (!("speechSynthesis" in window) || !text) {
+        $("voiceReplyStatus").textContent =
+          "Voice output is not supported in this browser. Try Google Chrome.";
+        return;
+      }
+
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = getSpeechLocale();
+      utterance.rate = 1;
+      utterance.pitch = 1;
+
+      const voices = window.speechSynthesis.getVoices();
+      const localePrefix = utterance.lang.toLowerCase().split("-")[0];
+      const matchingVoice = voices.find((voice) =>
+        voice.lang && voice.lang.toLowerCase().startsWith(localePrefix)
+      );
+      if (matchingVoice) utterance.voice = matchingVoice;
+
+      utterance.onstart = () => {
+        $("voiceReplyStatus").textContent =
+          "Speaking reply (" + utterance.lang + ")...";
+      };
+      utterance.onend = () => {
+        $("voiceReplyStatus").textContent =
+          "Voice reply finished. You can replay it with Speak Last Reply.";
+      };
+      utterance.onerror = (event) => {
+        $("voiceReplyStatus").textContent =
+          "Voice playback error: " + event.error +
+          ". Check Chrome sound and available language voices.";
+      };
+
+      window.speechSynthesis.speak(utterance);
+    }
+
+    $("speakAgainButton").addEventListener("click", () => {
+      if (lastAIReply) {
+        speakReply(lastAIReply);
+      } else {
+        $("voiceReplyStatus").textContent = "There is no AI reply to play yet.";
+      }
+    });
+
+    $("stopSpeechButton").addEventListener("click", () => {
+      if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+      $("voiceReplyStatus").textContent = "Voice playback stopped.";
+    });
+
     // AI Assistant
     function addMessage(type, content) {
       const message = document.createElement("div");
@@ -654,6 +731,8 @@
           "Answer in " + language +
           ". Be helpful and clear. User question: " + question
         );
+        lastAIReply = reply.textContent;
+        if (voiceReplyEnabled) speakReply(lastAIReply);
       } catch (error) {
         reply.textContent =
           "Could not connect to NOVA AI: " + error.message +
@@ -734,6 +813,8 @@
       "\nVoice input: " +
       ((window.SpeechRecognition || window.webkitSpeechRecognition)
         ? "Supported" : "Not detected") +
+      "\nVoice output: " +
+      (("speechSynthesis" in window) ? "Supported" : "Not detected") +
       "\nSecure connection: " +
       (window.isSecureContext ? "Yes" : "No");
   </script>
