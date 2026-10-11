@@ -1,322 +1,60 @@
-
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#080d19">
-  <title>NOVA AI Browser</title>
-  <meta name="description" content="NOVA AI Browser with AI chat and web search.">
-  <style>
-    :root {
-      color-scheme: dark;
-      --bg: #080d19;
-      --panel: #111a2b;
-      --line: #283750;
-      --text: #edf4ff;
-      --muted: #a0aec4;
-      --blue: #5794ff;
-      --purple: #9c7bff;
-    }
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: Inter, Arial, sans-serif;
-      background: radial-gradient(ellipse at top, #17284b 0%, var(--bg) 55%);
-      color: var(--text);
-    }
-    button, input, textarea, select { font: inherit; }
-    button { cursor: pointer; }
-    header {
-      min-height: 72px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 12px;
-      padding: 14px 5%;
-      border-bottom: 1px solid #26334b;
-      background: #080d19dd;
-    }
-    .brand { display: flex; align-items: center; gap: 12px; }
-    .logo {
-      width: 42px; height: 42px; border-radius: 14px;
-      display: grid; place-items: center;
-      font-weight: 900; font-size: 20px;
-      background: linear-gradient(135deg, var(--blue), var(--purple));
-      color: white;
-    }
-    .brand h1 { margin: 0; font-size: 19px; }
-    .brand p { margin: 4px 0 0; color: var(--muted); font-size: 12px; }
-    .status { font-size: 12px; color: #78e6b0; }
-    main { width: min(920px, 94%); margin: 34px auto 0; }
-    .hero { text-align: center; padding: 18px 0 25px; }
-    .hero .tag {
-      color: #bba8ff; font-size: 12px; letter-spacing: 2px;
-      text-transform: uppercase;
-    }
-    .hero h2 { font-size: clamp(30px, 6vw, 49px); margin: 13px 0; }
-    .hero p { color: var(--muted); margin: 0; line-height: 1.7; }
-    .search-card, .chat-card {
-      background: #10192aee; border: 1px solid var(--line);
-      border-radius: 20px; padding: 18px; margin-bottom: 18px;
-      box-shadow: 0 18px 55px #0002;
-    }
-    .section-title { font-size: 15px; margin: 0 0 12px; }
-    .search-row { display: flex; gap: 9px; }
-    input, textarea, select {
-      width: 100%; color: var(--text); background: #091221;
-      border: 1px solid #33445f; border-radius: 12px;
-      padding: 13px 14px; outline: none;
-    }
-    input:focus, textarea:focus, select:focus {
-      border-color: var(--blue);
-      box-shadow: 0 0 0 3px #5794ff20;
-    }
-    .primary, .secondary {
-      border: 0; border-radius: 12px; padding: 12px 17px;
-      color: white; font-weight: 700; white-space: nowrap;
-    }
-    .primary { background: linear-gradient(135deg, #347ff2, #7957e8); }
-    .secondary { background: #253650; }
-    .primary:disabled { opacity: .55; cursor: wait; }
-    .chat-top {
-      display: flex; align-items: center; justify-content: space-between;
-      gap: 12px; flex-wrap: wrap; margin-bottom: 12px;
-    }
-    .chat-top select { width: auto; min-width: 155px; padding: 10px; }
-    #messages {
-      min-height: 240px; max-height: 52vh; overflow-y: auto;
-      border: 1px solid #27364d; border-radius: 14px;
-      padding: 14px; background: #09111f; margin-bottom: 13px;
-    }
-    .welcome { color: var(--muted); text-align: center; padding: 48px 10px; line-height: 1.8; }
-    .message { margin: 10px 0 16px; }
-    .who { font-size: 12px; color: #a9bfff; margin-bottom: 6px; font-weight: 700; }
-    .bubble {
-      white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.65;
-      padding: 12px 14px; border-radius: 12px;
-      background: #17243a; border: 1px solid #2a3c58;
-    }
-    .message.user .bubble { background: #17325b; }
-    .message.error .bubble { border-color: #a54b5a; color: #ffc4cc; }
-    .composer { display: flex; align-items: flex-end; gap: 9px; }
-    textarea { resize: vertical; min-height: 52px; max-height: 180px; }
-    .hint { color: var(--muted); font-size: 12px; line-height: 1.6; margin: 10px 2px 0; }
-    .quick { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
-    .quick button {
-      color: #d5e2f8; background: #18253a; border: 1px solid #34445e;
-      border-radius: 20px; padding: 8px 12px; font-size: 12px;
-    }
-    footer { text-align: center; color: #8090a9; font-size: 12px; padding: 24px 12px 35px; }
-    @media (max-width: 540px) {
-      header { padding: 12px 4%; }
-      main { margin-top: 20px; }
-      .search-card, .chat-card { padding: 12px; }
-      .search-row { flex-direction: column; }
-      .search-row .primary { width: 100%; }
-      .composer { align-items: stretch; }
-      .composer .primary { padding: 10px; }
-      #messages { min-height: 200px; }
-    }
-  </style>
-</head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#ffffff"><title>NOVA AI Browser</title>
+<style>
+:root{--blue:#1769e0;--blue2:#eaf2ff;--ink:#202124;--muted:#687386;--line:#e4e8ef;--bg:#fff;--panel:#f8faff;--shadow:0 8px 28px #20304d0d}*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.5 Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}button,input,textarea,select{font:inherit}button{cursor:pointer}.topbar{height:66px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 24px;position:sticky;top:0;background:#ffffffed;backdrop-filter:blur(12px);z-index:10}.brand{display:flex;align-items:center;gap:10px;font-weight:750;font-size:20px;letter-spacing:-.5px}.logo{width:35px;height:35px;border-radius:12px;background:linear-gradient(135deg,#2477f4,#1551c8);display:grid;place-items:center;color:#fff;font-weight:800;box-shadow:0 4px 10px #1769e033}.brand span:last-child{color:var(--blue)}.top-actions{display:flex;gap:9px;align-items:center}.pill{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 13px;color:#394150}.status{font-size:12px;color:#13834b;display:flex;align-items:center;gap:6px}.dot{width:7px;height:7px;background:#1db56c;border-radius:50%}.layout{display:grid;grid-template-columns:226px minmax(0,1fr);min-height:calc(100vh - 66px)}aside{border-right:1px solid var(--line);padding:20px 12px;background:#fcfdff}.nav-label{font-size:11px;font-weight:750;color:#9aa3b2;letter-spacing:1.2px;padding:10px 12px}.navbtn{width:100%;display:flex;gap:11px;align-items:center;border:0;background:transparent;color:#525e70;text-align:left;padding:11px 12px;border-radius:11px;margin:2px 0}.navbtn:hover,.navbtn.active{background:var(--blue2);color:var(--blue)}.navicon{width:22px;text-align:center;font-size:17px}.side-note{margin:24px 7px 0;padding:14px;border:1px solid var(--line);border-radius:14px;background:#fff;font-size:12px;color:var(--muted)}main{min-width:0;padding:28px clamp(16px,4vw,56px) 40px;max-width:1400px;width:100%;margin:0 auto}.hero{text-align:center;padding:35px 0 22px}.eyebrow{display:inline-flex;align-items:center;gap:7px;border:1px solid #dce8ff;background:#f6f9ff;border-radius:999px;padding:6px 11px;color:#245bb0;font-size:12px;font-weight:650}.hero h1{font-size:clamp(30px,4.4vw,49px);letter-spacing:-1.8px;line-height:1.13;margin:18px 0 10px}.hero h1 span{color:var(--blue)}.hero p{margin:0;color:var(--muted);font-size:15px}.searchbox{max-width:760px;margin:25px auto 0;border:1px solid #d9e0eb;border-radius:18px;box-shadow:0 5px 22px #1d3d6d0a;padding:13px;background:#fff}.searchbox:focus-within{border-color:#8db6ff;box-shadow:0 0 0 4px #1769e010}.prompt{width:100%;border:0;outline:0;resize:vertical;min-height:55px;max-height:180px;padding:5px 7px;color:var(--ink);background:transparent}.searchbottom{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:8px 2px 0}.selects{display:flex;gap:7px;align-items:center;flex-wrap:wrap}.smallselect{border:1px solid var(--line);background:#fff;border-radius:9px;padding:7px 9px;font-size:12px;color:#465266;max-width:150px}.btn{border:0;border-radius:10px;padding:10px 15px;background:var(--blue);color:#fff;font-weight:650;box-shadow:0 3px 8px #1769e024}.btn:hover{background:#1058c6}.btn:disabled{opacity:.55;cursor:wait}.btn.secondary{background:#fff;color:#354258;border:1px solid var(--line);box-shadow:none}.btn.secondary:hover{background:#f6f8fc}.toolheading{display:flex;align-items:end;justify-content:space-between;gap:10px;margin:34px 0 13px}.toolheading h2{font-size:18px;margin:0;letter-spacing:-.3px}.toolheading p{margin:3px 0 0;color:var(--muted);font-size:13px}.tools{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}.toolcard{border:1px solid var(--line);background:#fff;border-radius:15px;padding:16px;text-align:left;min-height:126px;transition:.15s;box-shadow:var(--shadow);color:var(--ink)}.toolcard:hover{border-color:#a9c8ff;transform:translateY(-2px)}.toolicon{width:37px;height:37px;border-radius:12px;background:var(--blue2);display:grid;place-items:center;font-size:19px;margin-bottom:12px}.toolcard strong{display:block;font-size:14px}.toolcard small{display:block;color:var(--muted);font-size:12px;margin-top:4px}.result{max-width:860px;margin:20px auto 0;display:none;border:1px solid var(--line);border-radius:16px;background:#fff;padding:18px;box-shadow:var(--shadow)}.result.show{display:block}.resulttop{display:flex;justify-content:space-between;align-items:center;gap:8px;border-bottom:1px solid var(--line);padding-bottom:10px;margin-bottom:12px}.resulttop strong{font-size:14px}.answer{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.75}.answer a{color:var(--blue)}.answer pre{white-space:pre-wrap;overflow:auto;background:#f5f7fb;padding:12px;border-radius:10px}.mini-actions{display:flex;gap:7px;flex-wrap:wrap}.mini-actions button{border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 9px;font-size:12px;color:#4b5668}.toolpanel{display:none;margin-top:22px;border:1px solid var(--line);border-radius:16px;padding:18px;background:#fff;box-shadow:var(--shadow)}.toolpanel.show{display:block}.panelhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.panelhead h3{margin:0;font-size:17px}.closebtn{border:1px solid var(--line);background:#fff;border-radius:9px;padding:6px 10px}.field{width:100%;border:1px solid #dfe5ee;border-radius:10px;padding:11px 12px;outline:0;background:#fff;color:var(--ink)}.field:focus{border-color:#8db6ff;box-shadow:0 0 0 3px #1769e010}textarea.field{min-height:125px;resize:vertical}.two-col{display:grid;grid-template-columns:1fr 1fr;gap:12px}.panel-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:11px}.html-preview{width:100%;height:330px;border:1px solid var(--line);border-radius:10px;background:white;margin-top:12px}.qrout{margin-top:14px}.qrout img{width:190px;height:190px;object-fit:contain;border:1px solid var(--line);padding:8px;border-radius:12px}.chatlog{display:flex;flex-direction:column;gap:12px;max-height:440px;overflow:auto;margin:10px 0 15px}.bubble{max-width:90%;padding:12px 14px;border-radius:14px;white-space:pre-wrap;overflow-wrap:anywhere}.bubble.user{align-self:flex-end;background:#eaf2ff;color:#173f83}.bubble.ai{align-self:flex-start;background:#f6f8fb;border:1px solid var(--line)}.foot{text-align:center;color:#9aa3b2;font-size:12px;margin:30px 0 0}.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#202a3a;color:#fff;border-radius:10px;padding:10px 15px;z-index:20;display:none;font-size:13px}.toast.show{display:block}.mobilemenu{display:none}
+@media(max-width:900px){.tools{grid-template-columns:repeat(2,minmax(0,1fr))}.layout{grid-template-columns:190px minmax(0,1fr)}aside{padding:15px 8px}main{padding:20px 18px}.hero{padding-top:24px}}
+@media(max-width:650px){.topbar{padding:0 13px;height:58px}.brand{font-size:18px}.status{display:none}.layout{display:block}aside{display:none;position:fixed;top:58px;bottom:0;left:0;width:250px;z-index:15;box-shadow:10px 0 30px #20304d18}.layout.menuopen aside{display:block}.mobilemenu{display:inline-block}.top-actions .pill{display:none}main{padding:14px 13px 30px}.hero{padding:22px 0 12px}.hero h1{letter-spacing:-1px}.searchbox{padding:10px;border-radius:15px}.searchbottom{align-items:stretch;flex-direction:column}.searchbottom .btn{width:100%}.tools{gap:9px}.toolcard{padding:12px;min-height:118px}.toolheading{margin-top:26px}.two-col{grid-template-columns:1fr}.result{padding:13px}.smallselect{max-width:none}.selects{width:100%}.selects select{flex:1}}
+</style></head>
 <body>
-  <header>
-    <div class="brand">
-      <div class="logo">N</div>
-      <div>
-        <h1>NOVA AI Browser</h1>
-        <p>Search smarter. Ask anything.</p>
-      </div>
-    </div>
-    <div class="status" id="backendStatus">● Checking backend</div>
-  </header>
-
-  <main>
-    <section class="hero">
-      <div class="tag">Your AI workspace</div>
-      <h2>Explore with <span style="color:#9b8aff">NOVA AI</span></h2>
-      <p>Search the web or chat with your chosen AI assistant.</p>
-    </section>
-
-    <section class="search-card">
-      <h3 class="section-title">🌐 Web Search</h3>
-      <form id="searchForm" class="search-row">
-        <input id="searchInput" type="search" placeholder="Search websites, news, information..." aria-label="Web search">
-        <button class="primary" type="submit">Search Web ↗</button>
-      </form>
-      <p class="hint">Web search opens search results in a new tab. AI chat is available below.</p>
-    </section>
-
-    <section class="chat-card">
-      <div class="chat-top">
-        <h3 class="section-title" style="margin:0">✦ NOVA AI Chat</h3>
-        <select id="provider" aria-label="Choose AI provider">
-          <option value="gemini">Gemini AI</option>
-          <option value="openai">ChatGPT (OpenAI)</option>
-        </select>
-      </div>
-
-      <div id="messages" aria-live="polite">
-        <div class="welcome" id="welcome">
-          <div style="font-size:30px">✧</div>
-          <strong>Welcome to NOVA AI</strong><br>
-          Type a question below and press Send.<br>
-          Choose Gemini or ChatGPT above.
-        </div>
-      </div>
-
-      <form id="chatForm">
-        <div class="composer">
-          <textarea id="messageInput" rows="2" placeholder="Type your message here..." aria-label="Type your message" required></textarea>
-          <button class="primary" id="sendButton" type="submit">Send ➤</button>
-        </div>
-      </form>
-      <div class="quick">
-        <button type="button" data-prompt="Introduce yourself.">Introduce yourself</button>
-        <button type="button" data-prompt="Explain artificial intelligence in simple words.">Explain AI</button>
-        <button type="button" data-prompt="Help me write HTML code for a website.">Write HTML</button>
-      </div>
-      <p class="hint">Please do not enter passwords, bank details, or other sensitive information.</p>
-    </section>
-  </main>
-
-  <footer>© <span id="year"></span> NOVA AI Browser · Powered by your Cloudflare Worker</footer>
-
-  <script>
-    // Your deployed Cloudflare Worker
-    const WORKER_URL =
-      "https://withered-surf-afdbnova-ai-backend.maheshmas37.workers.dev";
-
-    const messagesBox = document.getElementById("messages");
-    const messageInput = document.getElementById("messageInput");
-    const sendButton = document.getElementById("sendButton");
-    const providerSelect = document.getElementById("provider");
-    const backendStatus = document.getElementById("backendStatus");
-
-    const conversation = [];
-    document.getElementById("year").textContent = new Date().getFullYear();
-
-    function addMessage(role, text, isError = false) {
-      const welcome = document.getElementById("welcome");
-      if (welcome) welcome.remove();
-
-      const wrapper = document.createElement("div");
-      wrapper.className = "message " + role + (isError ? " error" : "");
-
-      const who = document.createElement("div");
-      who.className = "who";
-      who.textContent = role === "user"
-        ? "YOU"
-        : isError ? "ERROR" : "NOVA AI";
-
-      const bubble = document.createElement("div");
-      bubble.className = "bubble";
-      bubble.textContent = text;
-
-      wrapper.append(who, bubble);
-      messagesBox.appendChild(wrapper);
-      messagesBox.scrollTop = messagesBox.scrollHeight;
-      return wrapper;
-    }
-
-    async function checkBackend() {
-      try {
-        const response = await fetch(WORKER_URL + "/");
-        if (!response.ok) throw new Error("Backend unavailable");
-        const data = await response.json();
-        backendStatus.textContent = data.status === "ok"
-          ? "● Backend connected"
-          : "● Backend response received";
-        backendStatus.style.color = "#78e6b0";
-      } catch {
-        backendStatus.textContent = "● Backend connection issue";
-        backendStatus.style.color = "#ffb1b1";
-      }
-    }
-
-    async function sendMessage(text) {
-      const message = text.trim();
-      if (!message || sendButton.disabled) return;
-
-      addMessage("user", message);
-      conversation.push({ role: "user", content: message });
-      messageInput.value = "";
-      sendButton.disabled = true;
-      sendButton.textContent = "Wait…";
-
-      const provider = providerSelect.value;
-
-      try {
-        const response = await fetch(WORKER_URL + "/api/chat", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            provider,
-            messages: conversation.slice(-20)
-          })
-        });
-
-        const data = await response.json();
-
-        if (!response.ok || data.error) {
-          throw new Error(data.error || "Request failed with status " + response.status);
-        }
-
-        const reply = data.reply || data.response || data.text;
-        if (!reply) throw new Error("The AI returned an empty response.");
-
-        conversation.push({ role: "assistant", content: reply });
-        addMessage("assistant", reply);
-      } catch (error) {
-        // Keep the user's question, but remove it from history so it
-        // is not duplicated when they retry.
-        conversation.pop();
-        addMessage(
-          "assistant",
-          "Could not get a response.\n\n" + error.message +
-          "\n\nCheck your Cloudflare Worker, API Secret, model access, and API quota.",
-          true
-        );
-      } finally {
-        sendButton.disabled = false;
-        sendButton.textContent = "Send ➤";
-        messageInput.focus();
-      }
-    }
-
-    document.getElementById("chatForm").addEventListener("submit", (event) => {
-      event.preventDefault();
-      sendMessage(messageInput.value);
-    });
-
-    messageInput.addEventListener("keydown", (event) => {
-      if (event.key === "Enter" && !event.shiftKey) {
-        event.preventDefault();
-        document.getElementById("chatForm").requestSubmit();
-      }
-    });
-
-    document.querySelectorAll("[data-prompt]").forEach((button) => {
-      button.addEventListener("click", () => {
-        messageInput.value = button.dataset.prompt;
-        messageInput.focus();
-      });
-    });
-
-    document.getElementById("searchForm").addEventListener("submit", (event) => {
-      event.preventDefault();
-      const query = document.getElementById("searchInput").value.trim();
-      if (!query) return;
-      window.open(
-        "https://www.google.com/search?q=" + encodeURIComponent(query),
-        "_blank",
-        "noopener,noreferrer"
-      );
-    });
-
-    checkBackend();
-  </script>
-</body>
-</html>
+<header class="topbar"><div class="brand"><button class="pill mobilemenu" id="menuBtn" aria-label="Menu">☰</button><div class="logo">N</div><div>NOVA <span>AI</span></div></div><div class="top-actions"><span class="status"><i class="dot"></i> Browser ready</span><button class="pill" id="voiceToggle">🔊 Voice: On</button></div></header>
+<div class="layout" id="layout"><aside><div class="nav-label">WORKSPACE</div><button class="navbtn active" data-go="home"><span class="navicon">⌂</span>Home</button><button class="navbtn" data-tool="chat"><span class="navicon">✦</span>AI Chat</button><button class="navbtn" data-tool="web"><span class="navicon">⌕</span>Web Search</button><div class="nav-label">TOOLS</div><button class="navbtn" data-tool="html"><span class="navicon">⌘</span>HTML Editor</button><button class="navbtn" data-tool="translate"><span class="navicon">文</span>Translator</button><button class="navbtn" data-tool="summarize"><span class="navicon">≡</span>Summarizer</button><button class="navbtn" data-tool="calculator"><span class="navicon">＋</span>Calculator</button><button class="navbtn" data-tool="notes"><span class="navicon">▤</span>Notes</button><button class="navbtn" data-tool="qr"><span class="navicon">▦</span>QR Code</button><div class="side-note"><strong>Simple. Smart. Useful.</strong><br>One clean workspace for everyday AI and browser tools.</div></aside>
+<main><section class="hero" id="home"><div class="eyebrow">✦ YOUR EVERYDAY AI WORKSPACE</div><h1>Search smarter with <span>NOVA AI</span></h1><p>Ask a question, create something, or choose a tool to get started.</p><div class="searchbox"><textarea id="prompt" class="prompt" placeholder="Ask NOVA anything…" rows="2"></textarea><div class="searchbottom"><div class="selects"><select id="provider" class="smallselect" aria-label="AI provider"><option value="gemini">Gemini AI</option><option value="openai">ChatGPT</option></select><button class="btn secondary" id="micBtn" type="button">🎙 Speak</button><button class="btn secondary" id="webBtn" type="button">⌕ Search web</button></div><button class="btn" id="askBtn">Ask NOVA ↗</button></div></div><div class="result" id="answerBox"><div class="resulttop"><strong id="answerTitle">NOVA answer</strong><div class="mini-actions"><button id="copyAnswer">Copy</button><button id="readAnswer">▶ Read aloud</button><button id="stopRead">■ Stop</button></div></div><div class="answer" id="answer"></div></div></section>
+<div class="toolheading"><div><h2>Explore tools</h2><p>Useful tools, right when you need them.</p></div></div><section class="tools">
+<button class="toolcard" data-tool="chat"><div class="toolicon">✦</div><strong>AI Chat</strong><small>Chat with Gemini or ChatGPT</small></button><button class="toolcard" data-tool="web"><div class="toolicon">⌕</div><strong>Web Search</strong><small>Search the web with Google</small></button><button class="toolcard" data-tool="html"><div class="toolicon">⌘</div><strong>HTML Editor</strong><small>Write code and preview it</small></button><button class="toolcard" data-tool="translate"><div class="toolicon">文</div><strong>Translator</strong><small>Translate text with AI</small></button><button class="toolcard" data-tool="summarize"><div class="toolicon">≡</div><strong>Summarizer</strong><small>Shorten long text or notes</small></button><button class="toolcard" data-tool="calculator"><div class="toolicon">＋</div><strong>Calculator</strong><small>Quick arithmetic calculations</small></button><button class="toolcard" data-tool="notes"><div class="toolicon">▤</div><strong>My Notes</strong><small>Save notes in this browser</small></button><button class="toolcard" data-tool="qr"><div class="toolicon">▦</div><strong>QR Code</strong><small>Create a QR from text or a link</small></button>
+</section>
+<section class="toolpanel" id="panel-chat"><div class="panelhead"><h3>✦ AI Chat</h3><button class="closebtn" data-close>Close ✕</button></div><div class="chatlog" id="chatlog"><div class="bubble ai">Hi! I'm NOVA. Choose Gemini or ChatGPT above and ask me anything.</div></div><textarea id="chatInput" class="field" placeholder="Write your message…" rows="3"></textarea><div class="panel-actions"><button class="btn" id="chatSend">Send message ↗</button><button class="btn secondary" id="chatMic">🎙 Speak</button><button class="btn secondary" id="clearChat">Clear chat</button></div></section>
+<section class="toolpanel" id="panel-web"><div class="panelhead"><h3>⌕ Web Search</h3><button class="closebtn" data-close>Close ✕</button></div><input class="field" id="webQuery" placeholder="Search Google…"><div class="panel-actions"><button class="btn" id="searchGoogle">Search Google ↗</button><button class="btn secondary" id="searchBing">Search Bing ↗</button></div></section>
+<section class="toolpanel" id="panel-html"><div class="panelhead"><h3>⌘ HTML Editor</h3><button class="closebtn" data-close>Close ✕</button></div><textarea class="field" id="htmlCode" spellcheck="false" style="font-family:ui-monospace,monospace;min-height:220px" placeholder="Paste or write HTML here…"><!doctype html>
+<html><head><meta charset="utf-8"><style>body{font-family:Arial;padding:24px;color:#202124}h1{color:#1769e0}</style></head><body><h1>Hello, NOVA!</h1><p>Your HTML preview appears here.</p><button onclick="alert('It works!')">Test button</button></body></html></textarea><div class="panel-actions"><button class="btn" id="runHtml">▶ Run preview</button><button class="btn secondary" id="downloadHtml">Download HTML</button></div><iframe class="html-preview" id="htmlPreview" title="HTML preview" sandbox="allow-scripts"></iframe></section>
+<section class="toolpanel" id="panel-translate"><div class="panelhead"><h3>文 Translator</h3><button class="closebtn" data-close>Close ✕</button></div><div class="two-col"><div><label for="sourceLang">From</label><select class="field" id="sourceLang"><option value="auto">Detect language</option><option value="en">English</option><option value="te">Telugu</option><option value="hi">Hindi</option><option value="kn">Kannada</option><option value="ta">Tamil</option><option value="es">Spanish</option><option value="fr">French</option></select></div><div><label for="targetLang">To</label><select class="field" id="targetLang"><option value="te">Telugu</option><option value="en">English</option><option value="hi">Hindi</option><option value="kn">Kannada</option><option value="ta">Tamil</option><option value="es">Spanish</option><option value="fr">French</option></select></div></div><textarea class="field" id="translateInput" placeholder="Enter text to translate…" style="margin-top:12px"></textarea><div class="panel-actions"><button class="btn" id="translateBtn">Translate with AI</button><button class="btn secondary" id="translateGoogle">Open Google Translate ↗</button></div></section>
+<section class="toolpanel" id="panel-summarize"><div class="panelhead"><h3>≡ Summarizer</h3><button class="closebtn" data-close>Close ✕</button></div><textarea class="field" id="summaryInput" placeholder="Paste an article, notes, or long text here…"></textarea><div class="panel-actions"><button class="btn" id="summarizeBtn">Summarize with AI</button></div></section>
+<section class="toolpanel" id="panel-calculator"><div class="panelhead"><h3>＋ Calculator</h3><button class="closebtn" data-close>Close ✕</button></div><input class="field" id="calcInput" placeholder="Example: (125 + 75) * 2 / 4" inputmode="decimal"><div class="panel-actions"><button class="btn" id="calculateBtn">Calculate =</button><button class="btn secondary" id="clearCalc">Clear</button></div><p id="calcResult" style="font-size:22px;font-weight:700;margin-bottom:0"></p><small style="color:var(--muted)">Supports numbers, + − × ÷, brackets, decimals and percentages (use /100 for percentage calculations).</small></section>
+<section class="toolpanel" id="panel-notes"><div class="panelhead"><h3>▤ My Notes</h3><button class="closebtn" data-close>Close ✕</button></div><textarea class="field" id="notesInput" placeholder="Write your notes here…"></textarea><div class="panel-actions"><button class="btn" id="saveNotes">Save notes</button><button class="btn secondary" id="downloadNotes">Download .txt</button><span id="notesStatus" style="font-size:12px;color:#16834a;align-self:center"></span></div></section>
+<section class="toolpanel" id="panel-qr"><div class="panelhead"><h3>▦ QR Code Generator</h3><button class="closebtn" data-close>Close ✕</button></div><input class="field" id="qrInput" placeholder="Enter a website link or any text…"><div class="panel-actions"><button class="btn" id="makeQr">Generate QR</button></div><div class="qrout" id="qrOutput"></div><small style="color:var(--muted)">QR image generation uses an online service; do not enter private or sensitive information.</small></section>
+<div class="foot">NOVA AI Browser · Simple tools for everyday work</div></main></div><div class="toast" id="toast"></div>
+<script>
+(() => {
+'use strict';
+const WORKER_URL='https://withered-surf-afdbnova-ai-backend.maheshmas37.workers.dev';
+const $=id=>document.getElementById(id);let voiceOn=true;let chatHistory=[];let recognition=null;
+function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toast.timer);toast.timer=setTimeout(()=>t.classList.remove('show'),2800)}
+function showPanel(name){document.querySelectorAll('.toolpanel').forEach(p=>p.classList.remove('show'));if(name&&$('panel-'+name))$('panel-'+name).classList.add('show');document.querySelectorAll('.navbtn').forEach(b=>b.classList.toggle('active',b.dataset.tool===name||(b.dataset.go==='home'&&!name)));if(name&&$('panel-'+name))$('panel-'+name).scrollIntoView({behavior:'smooth',block:'start'});$('layout').classList.remove('menuopen')}
+document.querySelectorAll('[data-tool]').forEach(b=>b.addEventListener('click',()=>showPanel(b.dataset.tool)));document.querySelectorAll('[data-close]').forEach(b=>b.addEventListener('click',()=>showPanel(null)));document.querySelectorAll('[data-go="home"]').forEach(b=>b.addEventListener('click',()=>{showPanel(null);$('home').scrollIntoView({behavior:'smooth'})}));$('menuBtn').addEventListener('click',()=>$('layout').classList.toggle('menuopen'));
+$('voiceToggle').addEventListener('click',()=>{voiceOn=!voiceOn;$('voiceToggle').textContent=voiceOn?'🔊 Voice: On':'🔇 Voice: Off';if(!voiceOn&&'speechSynthesis'in window)speechSynthesis.cancel()});
+function speak(text){if(!voiceOn||!('speechSynthesis'in window)){if(!('speechSynthesis'in window))toast('Voice output is not supported in this browser.');return}speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang=/[\u0C00-\u0C7F]/.test(text)?'te-IN':'en-US';speechSynthesis.speak(u)}
+async function askAI(message,provider,history=[]){const res=await fetch(WORKER_URL+'/api/chat',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({provider,message,history})});let data;try{data=await res.json()}catch{throw new Error('Worker returned an unreadable response. Check your Cloudflare Worker.')};if(!res.ok)throw new Error(data.error||data.message||('Request failed: '+res.status));const answer=data.reply||data.response||data.answer||data.text||data.output;if(typeof answer==='string'&&answer.trim())return answer;if(data.error)throw new Error(data.error);throw new Error('AI reply was not found in the Worker response. Check the /api/chat response format.')}
+function escapeHtml(s){return s.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function formatAnswer(s){return escapeHtml(s).replace(/```([\s\S]*?)```/g,'<pre>$1</pre>').replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>').replace(/\n/g,'<br>')}
+function showAnswer(title,text){$('answerTitle').textContent=title;$('answer').innerHTML=formatAnswer(text);$('answerBox').classList.add('show');$('answerBox').scrollIntoView({behavior:'smooth',block:'nearest'})}
+async function runPrompt(message,task=''){message=message.trim();if(!message){toast('Please enter a message first.');return}const provider=$('provider').value;const full=task?task+'\n\n'+message:message;$('askBtn').disabled=true;$('askBtn').textContent='Thinking…';try{const ans=await askAI(full,provider,chatHistory);showAnswer(provider==='openai'?'ChatGPT response':'Gemini response',ans);if(voiceOn)speak(ans)}catch(e){showAnswer('Connection issue',e.message+'\n\nCheck that the Cloudflare Worker is deployed, its API secret is configured, and the selected provider/model is available.');toast('AI request failed')}finally{$('askBtn').disabled=false;$('askBtn').textContent='Ask NOVA ↗'}}
+$('askBtn').addEventListener('click',()=>runPrompt($('prompt').value));$('prompt').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();runPrompt($('prompt').value)}});
+$('copyAnswer').addEventListener('click',async()=>{try{await navigator.clipboard.writeText($('answer').innerText);toast('Answer copied')}catch{toast('Clipboard unavailable; select and copy the text.')}});$('readAnswer').addEventListener('click',()=>speak($('answer').innerText));$('stopRead').addEventListener('click',()=>{if('speechSynthesis'in window)speechSynthesis.cancel()});
+function startVoice(target){const SR=window.SpeechRecognition||window.webkitSpeechRecognition;if(!SR){toast('Voice typing needs Chrome or Edge.');return}try{recognition?.stop();recognition=new SR();recognition.lang='en-IN';recognition.interimResults=false;recognition.onresult=e=>{const text=e.results[0][0].transcript;const el=$(target);el.value=(el.value?el.value+' ':'')+text;el.dispatchEvent(new Event('input'))};recognition.onerror=()=>toast('Microphone unavailable. Allow microphone permission and try again.');recognition.start();toast('Listening… speak now')}catch{toast('Could not start microphone. Check browser permission.')}}$('micBtn').addEventListener('click',()=>startVoice('prompt'));$('chatMic').addEventListener('click',()=>startVoice('chatInput'));
+function openSearch(engine,query){query=query.trim();if(!query){toast('Enter a search first.');return}const base=engine==='bing'?'https://www.bing.com/search?q=':'https://www.google.com/search?q=';window.open(base+encodeURIComponent(query),'_blank','noopener,noreferrer')}$('webBtn').addEventListener('click',()=>openSearch('google',$('prompt').value));$('searchGoogle').addEventListener('click',()=>openSearch('google',$('webQuery').value));$('searchBing').addEventListener('click',()=>openSearch('bing',$('webQuery').value));$('webQuery').addEventListener('keydown',e=>{if(e.key==='Enter')openSearch('google',$('webQuery').value)});
+function addBubble(text,who){const d=document.createElement('div');d.className='bubble '+who;d.textContent=text;$('chatlog').appendChild(d);$('chatlog').scrollTop=$('chatlog').scrollHeight;return d}
+async function sendChat(){const text=$('chatInput').value.trim();if(!text)return;const provider=$('provider').value;$('chatInput').value='';addBubble(text,'user');const waiting=addBubble('Thinking…','ai');$('chatSend').disabled=true;try{const reply=await askAI(text,provider,chatHistory);waiting.textContent=reply;chatHistory.push({role:'user',content:text},{role:'assistant',content:reply});if(chatHistory.length>12)chatHistory=chatHistory.slice(-12);if(voiceOn)speak(reply)}catch(e){waiting.textContent='Error: '+e.message}finally{$('chatSend').disabled=false}}
+$('chatSend').addEventListener('click',sendChat);$('chatInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat()}});$('clearChat').addEventListener('click',()=>{chatHistory=[];$('chatlog').innerHTML='<div class="bubble ai">Chat cleared. What would you like to ask?</div>'});
+$('runHtml').addEventListener('click',()=>{$('htmlPreview').srcdoc=$('htmlCode').value;toast('Preview updated')});$('htmlPreview').srcdoc=$('htmlCode').value;$('downloadHtml').addEventListener('click',()=>downloadFile('nova-page.html',$('htmlCode').value,'text/html'));
+$('translateBtn').addEventListener('click',()=>{const to=$('targetLang').value,from=$('sourceLang').value;runPrompt($('translateInput').value,`Translate the following text from ${from==='auto'?'the detected language':from} to ${to}. Return only the translation, preserving the meaning and tone:`)});$('translateGoogle').addEventListener('click',()=>{const text=$('translateInput').value;const url='https://translate.google.com/?sl='+encodeURIComponent($('sourceLang').value==='auto'?'auto':$('sourceLang').value)+'&tl='+encodeURIComponent($('targetLang').value)+'&text='+encodeURIComponent(text)+'&op=translate';window.open(url,'_blank','noopener,noreferrer')});
+$('summarizeBtn').addEventListener('click',()=>runPrompt($('summaryInput').value,'Summarize the text below into clear, concise bullet points. Keep key facts and actions. If the text is very short, provide a one-sentence summary:'));
+// Small arithmetic parser: accepts only numeric arithmetic characters, not arbitrary JavaScript.
+function calculate(expr){expr=expr.trim().replace(/×/g,'*').replace(/÷/g,'/').replace(/−/g,'-');if(!expr||!/^[0-9+\-*/().%\s]+$/.test(expr))throw new Error('Use only numbers and arithmetic operators.');expr=expr.replace(/(\d+(?:\.\d+)?)%/g,'($1/100)');if(/\/\s*0(?![.\d])/.test(expr))throw new Error('Cannot divide by zero.');const tokens=expr.match(/\d*\.?\d+|[()+\-*/]/g)||[];let i=0;function factor(){const t=tokens[i++];if(t==='('){const v=add();if(tokens[i++]!==')')throw new Error('Check your brackets.');return v}if(t==='+')return factor();if(t==='-')return -factor();const n=Number(t);if(!Number.isFinite(n))throw new Error('Invalid number.');return n}function mul(){let v=factor();while(tokens[i]==='*'||tokens[i]==='/'){const op=tokens[i++],n=factor();if(op==='/'&&n===0)throw new Error('Cannot divide by zero.');v=op==='*'?v*n:v/n}return v}function add(){let v=mul();while(tokens[i]==='+'||tokens[i]==='-'){const op=tokens[i++],n=mul();v=op==='+'?v+n:v-n}return v}const result=add();if(i!==tokens.length||!Number.isFinite(result))throw new Error('Invalid expression.');return result}
+$('calculateBtn').addEventListener('click',()=>{try{$('calcResult').textContent='= '+calculate($('calcInput').value).toLocaleString(undefined,{maximumFractionDigits:10});}catch(e){$('calcResult').textContent=e.message}});$('clearCalc').addEventListener('click',()=>{$('calcInput').value='';$('calcResult').textContent=''});$('calcInput').addEventListener('keydown',e=>{if(e.key==='Enter')$('calculateBtn').click()});
+try{$('notesInput').value=localStorage.getItem('novaNotes')||''}catch{}$('saveNotes').addEventListener('click',()=>{try{localStorage.setItem('novaNotes',$('notesInput').value);$('notesStatus').textContent='Saved on this browser';toast('Notes saved')}catch{$('notesStatus').textContent='Could not save notes'}});$('downloadNotes').addEventListener('click',()=>downloadFile('nova-notes.txt',$('notesInput').value,'text/plain'));
+$('makeQr').addEventListener('click',()=>{const val=$('qrInput').value.trim();if(!val){toast('Enter text or a link first.');return}const img=document.createElement('img');img.alt='Generated QR code';img.src='https://api.qrserver.com/v1/create-qr-code/?size=240x240&data='+encodeURIComponent(val);img.onerror=()=>toast('QR service could not be reached.');const wrap=$('qrOutput');wrap.replaceChildren(img);const a=document.createElement('a');a.href=img.src;a.target='_blank';a.rel='noopener noreferrer';a.textContent='Open QR image';a.style.display='block';a.style.marginTop='8px';wrap.appendChild(a)});
+function downloadFile(name,content,type){const blob=new Blob([content],{type});const url=URL.createObjectURL(blob);const a=document.createElement('a');a.href=url;a.download=name;document.body.appendChild(a);a.click();a.remove();URL.revokeObjectURL(url)}
+})();
+</script></body></html>
