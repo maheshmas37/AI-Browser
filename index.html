@@ -2,409 +2,740 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#070b14">
-<title>NOVA AI Browser</title>
-<style>
-:root {
-  color-scheme: dark;
-  --bg:#070b14;
-  --panel:#10192b;
-  --border:#293955;
-  --text:#f3f7ff;
-  --muted:#98a9c3;
-  --cyan:#55e7ff;
-  --purple:#a58aff;
-}
-* { box-sizing:border-box; }
-body {
-  margin:0; min-height:100vh; background:var(--bg);
-  color:var(--text); font-family:Arial, sans-serif;
-  background-image:
-    radial-gradient(ellipse at 50% 0%,#16416b66,transparent 55%),
-    radial-gradient(ellipse at 90% 80%,#6724a622,transparent 40%);
-}
-button,input,select,textarea { font:inherit; }
-button { cursor:pointer; }
-button:focus-visible,input:focus-visible,
-select:focus-visible,textarea:focus-visible {
-  outline:2px solid var(--cyan); outline-offset:3px;
-}
-header {
-  min-height:72px; padding:14px 5%;
-  display:flex; justify-content:space-between;
-  align-items:center; gap:16px; flex-wrap:wrap;
-  border-bottom:1px solid #ffffff16;
-}
-.brand { font-size:23px; font-weight:900; letter-spacing:2px; }
-.brand span { color:var(--cyan); }
-.status { color:#75efb5; font-size:12px; }
-main { width:min(1050px,100%); margin:auto; padding:45px 20px; }
-.hero { text-align:center; }
-.tag {
-  color:#b7f3ff; font-size:12px; letter-spacing:2px;
-  border:1px solid #315777; border-radius:30px;
-  padding:9px 15px; display:inline-block;
-}
-h1 { font-size:clamp(37px,7vw,68px); line-height:1.12; }
-.gradient {
-  background:linear-gradient(90deg,var(--cyan),var(--purple));
-  color:var(--cyan); background-clip:text;
-  -webkit-background-clip:text; -webkit-text-fill-color:transparent;
-}
-p { line-height:1.7; }
-.muted { color:var(--muted); }
-.search {
-  display:flex; gap:9px; align-items:center;
-  max-width:760px; margin:25px auto 12px;
-  padding:9px; border:1px solid #3a5277;
-  border-radius:17px; background:var(--panel);
-}
-input,select,textarea {
-  color:var(--text); background:#0b1322;
-  border:1px solid var(--border); border-radius:10px;
-  padding:12px; min-width:0;
-}
-.search input { flex:1; border:0; background:transparent; }
-.btn {
-  background:linear-gradient(110deg,var(--cyan),var(--purple));
-  color:#08111e; font-weight:bold; border:0;
-  border-radius:10px; padding:13px 17px;
-}
-.btn2 {
-  color:var(--text); background:#17243a;
-  border:1px solid var(--border);
-  border-radius:10px; padding:12px;
-}
-section { margin-top:35px; }
-.section-title { font-size:13px; letter-spacing:1.5px; }
-.grid {
-  display:grid; grid-template-columns:repeat(4,minmax(0,1fr));
-  gap:12px;
-}
-.card {
-  border:1px solid var(--border); border-radius:16px;
-  padding:17px; background:linear-gradient(145deg,#121d30,#0c1320);
-}
-.shortcut {
-  text-decoration:none; color:var(--text);
-  transition:transform .2s,border-color .2s;
-}
-.shortcut:hover { transform:translateY(-3px); border-color:var(--cyan); }
-.emoji { font-size:25px; display:block; margin-bottom:12px; }
-.small { color:var(--muted); font-size:12px; }
-.panel {
-  border:1px solid #33466a; border-radius:18px;
-  padding:20px; background:#10182bde;
-}
-.panel h2 { margin-top:0; font-size:20px; }
-.row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
-.row > * { flex:1; }
-label { display:block; font-size:12px; color:#b8c7dd; margin:12px 0 7px; }
-select { width:100%; }
-textarea { width:100%; min-height:110px; resize:vertical; }
-.chat-log {
-  min-height:100px; max-height:280px; overflow:auto;
-  padding:12px; border:1px solid var(--border);
-  border-radius:12px; margin:14px 0; background:#080f1c;
-}
-.message { padding:10px 12px; border-radius:10px; margin:8px 0; overflow-wrap:anywhere; }
-.user { background:#17314a; }
-.assistant { background:#201c39; }
-.note { color:#aebbd0; font-size:12px; line-height:1.7; }
-footer {
-  margin-top:38px; border-top:1px solid #ffffff18;
-  padding-top:20px; text-align:center; color:#71829c; font-size:12px;
-}
-@media(max-width:650px) {
-  main { padding:32px 14px; }
-  .grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; }
-  .search { flex-wrap:wrap; }
-  .search input { flex-basis:65%; }
-  .search .btn { flex:1; }
-  .panel { padding:15px; }
-}
-</style>
-</head>
-<body>
-<header>
-  <div class="brand">✧ NOVA <span>AI</span></div>
-  <div class="status">● MULTILINGUAL EDITION</div>
-</header>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080b16">
+  <meta name="description" content="NOVA AI Browser - Smart search, AI assistant, voice search and translation.">
+  <title>NOVA AI Browser</title>
 
-<main>
-  <div class="hero">
-    <div class="tag">✦ YOUR WORLD. YOUR LANGUAGE.</div>
-    <h1>Think beyond.<br><span class="gradient">Explore everything.</span></h1>
-    <p class="muted">Search the web, translate text and explore languages.</p>
-
-    <form class="search" id="searchForm">
-      <span>⌕</span>
-      <input id="query" placeholder="Search or enter a website..."
-             aria-label="Search the web" required>
-      <button class="btn2" type="button" id="voiceBtn"
-              title="Voice search">🎙️</button>
-      <button class="btn" type="submit">Search ↗</button>
-    </form>
-    <p class="small" id="voiceStatus">Voice search depends on browser and language support.</p>
-  </div>
-
-  <section>
-    <h2 class="section-title">QUICK ACCESS</h2>
-    <div class="grid">
-      <a class="card shortcut" href="https://www.google.com" target="_blank" rel="noopener noreferrer">
-        <span class="emoji">🔎</span><strong>Google</strong>
-        <p class="small">Search the web</p>
-      </a>
-      <a class="card shortcut" href="https://www.youtube.com" target="_blank" rel="noopener noreferrer">
-        <span class="emoji">▶️</span><strong>YouTube</strong>
-        <p class="small">Videos and learning</p>
-      </a>
-      <a class="card shortcut" href="https://mail.google.com" target="_blank" rel="noopener noreferrer">
-        <span class="emoji">✉️</span><strong>Gmail</strong>
-        <p class="small">Your inbox</p>
-      </a>
-      <a class="card shortcut" href="https://github.com" target="_blank" rel="noopener noreferrer">
-        <span class="emoji">⌘</span><strong>GitHub</strong>
-        <p class="small">Build and create</p>
-      </a>
-    </div>
-  </section>
-
-  <section class="panel">
-    <h2>🌍 Language Settings</h2>
-    <p class="small">Choose a language for voice input and translation.</p>
-    <label for="language">Select language</label>
-    <select id="language">
-      <option value="en-US">English</option>
-      <option value="te-IN">తెలుగు — Telugu</option>
-      <option value="hi-IN">हिन्दी — Hindi</option>
-      <option value="ta-IN">தமிழ் — Tamil</option>
-      <option value="kn-IN">ಕನ್ನಡ — Kannada</option>
-      <option value="ml-IN">മലയാളം — Malayalam</option>
-      <option value="bn-IN">বাংলা — Bengali</option>
-      <option value="mr-IN">मराठी — Marathi</option>
-      <option value="gu-IN">ગુજરાતી — Gujarati</option>
-      <option value="pa-IN">ਪੰਜਾਬੀ — Punjabi</option>
-      <option value="ur-PK">اردو — Urdu</option>
-      <option value="ar-SA">العربية — Arabic</option>
-      <option value="fr-FR">Français — French</option>
-      <option value="de-DE">Deutsch — German</option>
-      <option value="es-ES">Español — Spanish</option>
-      <option value="pt-PT">Português — Portuguese</option>
-      <option value="it-IT">Italiano — Italian</option>
-      <option value="ru-RU">Русский — Russian</option>
-      <option value="zh-CN">中文 — Chinese</option>
-      <option value="ja-JP">日本語 — Japanese</option>
-      <option value="ko-KR">한국어 — Korean</option>
-      <option value="id-ID">Bahasa Indonesia</option>
-      <option value="th-TH">ไทย — Thai</option>
-      <option value="vi-VN">Tiếng Việt — Vietnamese</option>
-      <option value="tr-TR">Türkçe — Turkish</option>
-      <option value="nl-NL">Nederlands — Dutch</option>
-      <option value="en-GB">English (UK)</option>
-    </select>
-  </section>
-
-  <section class="panel">
-    <h2>🤖 NOVA AI Assistant</h2>
-    <p class="small">Ask questions in your preferred language.</p>
-    <div class="chat-log" id="chatLog" aria-live="polite">
-      <div class="message assistant">
-        Welcome to NOVA! The AI service must be connected to answer questions directly.
-      </div>
-    </div>
-    <form id="chatForm">
-      <label for="chatInput">Your question</label>
-      <textarea id="chatInput" placeholder="Ask something in any language..."></textarea>
-      <div class="row">
-        <button class="btn" type="submit">Send to AI ↗</button>
-        <button class="btn2" type="button" id="openAI">Open AI Assistant</button>
-      </div>
-    </form>
-    <p class="note">
-      The chat interface is ready, but direct AI answers are not active until
-      a secure AI backend is connected. The button below opens an external AI service.
-    </p>
-  </section>
-
-  <section class="panel">
-    <h2>🔄 Text Translator</h2>
-    <label for="translateText">Text to translate</label>
-    <textarea id="translateText" placeholder="Enter text in any language..."></textarea>
-    <div class="row">
-      <div>
-        <label for="sourceLang">From</label>
-        <select id="sourceLang">
-          <option value="auto">Detect language</option>
-          <option value="en">English</option>
-          <option value="te">Telugu</option>
-          <option value="hi">Hindi</option>
-          <option value="ta">Tamil</option>
-          <option value="kn">Kannada</option>
-          <option value="ml">Malayalam</option>
-          <option value="bn">Bengali</option>
-          <option value="ar">Arabic</option>
-          <option value="fr">French</option>
-          <option value="de">German</option>
-          <option value="es">Spanish</option>
-          <option value="zh-CN">Chinese</option>
-          <option value="ja">Japanese</option>
-          <option value="ko">Korean</option>
-          <option value="ru">Russian</option>
-          <option value="pt">Portuguese</option>
-        </select>
-      </div>
-      <div>
-        <label for="targetLang">To</label>
-        <select id="targetLang">
-          <option value="te">Telugu</option>
-          <option value="en">English</option>
-          <option value="hi">Hindi</option>
-          <option value="ta">Tamil</option>
-          <option value="kn">Kannada</option>
-          <option value="ml">Malayalam</option>
-          <option value="bn">Bengali</option>
-          <option value="ar">Arabic</option>
-          <option value="fr">French</option>
-          <option value="de">German</option>
-          <option value="es">Spanish</option>
-          <option value="zh-CN">Chinese</option>
-          <option value="ja">Japanese</option>
-          <option value="ko">Korean</option>
-          <option value="ru">Russian</option>
-          <option value="pt">Portuguese</option>
-        </select>
-      </div>
-    </div>
-    <p><button class="btn" id="translateBtn" type="button">Translate text ↗</button></p>
-    <p class="note">Translation opens Google Translate in a new tab.</p>
-  </section>
-
-  <footer>✧ NOVA AI BROWSER · Built for curious minds</footer>
-</main>
-
-<script>
-"use strict";
-
-const query = document.getElementById("query");
-const language = document.getElementById("language");
-
-function searchWeb(value) {
-  const text = value.trim();
-  if (!text) {
-    query.focus();
-    return;
-  }
-
-  const isUrl =
-    /^(https?:\/\/)?([\w-]+\.)+[a-z]{2,}([/?#][^\s]*)?$/i.test(text);
-
-  const destination = isUrl
-    ? (/^https?:\/\//i.test(text) ? text : "https://" + text)
-    : "https://www.google.com/search?q=" + encodeURIComponent(text);
-
-  window.open(destination, "_blank", "noopener,noreferrer");
-}
-
-document.getElementById("searchForm").addEventListener("submit", event => {
-  event.preventDefault();
-  searchWeb(query.value);
-});
-
-document.getElementById("voiceBtn").addEventListener("click", () => {
-  const SpeechRecognition =
-    window.SpeechRecognition || window.webkitSpeechRecognition;
-
-  if (!SpeechRecognition) {
-    document.getElementById("voiceStatus").textContent =
-      "Voice recognition is unavailable in this browser. Try an updated Chrome browser.";
-    return;
-  }
-
-  const recognition = new SpeechRecognition();
-  recognition.lang = language.value;
-  recognition.interimResults = false;
-  recognition.maxAlternatives = 1;
-
-  document.getElementById("voiceStatus").textContent =
-    "Listening... Please speak now.";
-
-  recognition.onresult = event => {
-    query.value = event.results[0][0].transcript;
-    document.getElementById("voiceStatus").textContent =
-      "Voice captured. Searching...";
-    searchWeb(query.value);
-  };
-
-  recognition.onerror = () => {
-    document.getElementById("voiceStatus").textContent =
-      "Voice search failed. Check microphone permission and try again.";
-  };
-
-  recognition.onend = () => {
-    if (document.getElementById("voiceStatus").textContent.includes("Listening")) {
-      document.getElementById("voiceStatus").textContent =
-        "Voice search ended. Try again if needed.";
+  <style>
+    :root {
+      --bg: #080b16;
+      --panel: #11172a;
+      --panel2: #171f36;
+      --text: #edf3ff;
+      --muted: #9baac8;
+      --blue: #6c8cff;
+      --cyan: #41e5ef;
+      --border: rgba(160, 183, 255, .17);
     }
-  };
 
-  try {
-    recognition.start();
-  } catch (error) {
-    document.getElementById("voiceStatus").textContent =
-      "Voice search is already active. Please wait and try again.";
-  }
-});
+    * { box-sizing: border-box; }
 
-document.getElementById("chatForm").addEventListener("submit", event => {
-  event.preventDefault();
-  const input = document.getElementById("chatInput");
-  const text = input.value.trim();
-  if (!text) return;
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--text);
+      background:
+        radial-gradient(ellipse at 15% 5%, #17254b 0, transparent 38%),
+        radial-gradient(ellipse at 90% 50%, #102a3d 0, transparent 35%),
+        var(--bg);
+      font-family: Inter, "Segoe UI", Arial, sans-serif;
+    }
 
-  const log = document.getElementById("chatLog");
+    button, input, select, textarea { font: inherit; }
 
-  const userMessage = document.createElement("div");
-  userMessage.className = "message user";
-  userMessage.textContent = text;
-  log.appendChild(userMessage);
+    button {
+      cursor: pointer;
+      transition: .2s ease;
+    }
 
-  const reply = document.createElement("div");
-  reply.className = "message assistant";
-  reply.textContent =
-    "AI is not connected yet. Click “Open AI Assistant” to continue externally, or connect a secure AI backend to enable answers inside NOVA.";
-  log.appendChild(reply);
+    button:hover { filter: brightness(1.13); }
+    button:disabled { opacity: .55; cursor: wait; }
 
-  input.value = "";
-  log.scrollTop = log.scrollHeight;
-});
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 18px 5%;
+      border-bottom: 1px solid var(--border);
+      background: rgba(8, 11, 22, .75);
+      backdrop-filter: blur(16px);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
 
-document.getElementById("openAI").addEventListener("click", () => {
-  const prompt = document.getElementById("chatInput").value.trim();
-  const url = prompt
-    ? "https://gemini.google.com/app"
-    : "https://gemini.google.com/";
-  window.open(url, "_blank", "noopener,noreferrer");
-});
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 22px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+    }
 
-document.getElementById("translateBtn").addEventListener("click", () => {
-  const text = document.getElementById("translateText").value.trim();
-  if (!text) {
-    document.getElementById("translateText").focus();
-    return;
-  }
+    .logo {
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 14px;
+      background: linear-gradient(135deg, var(--blue), var(--cyan));
+      color: #07101e;
+      box-shadow: 0 0 28px #41e5ef45;
+      font-size: 24px;
+    }
 
-  const source = document.getElementById("sourceLang").value;
-  const target = document.getElementById("targetLang").value;
-  const url = "https://translate.google.com/?sl=" +
-    encodeURIComponent(source) + "&tl=" +
-    encodeURIComponent(target) + "&text=" +
-    encodeURIComponent(text) + "&op=translate";
+    .brand small {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 10px;
+      letter-spacing: 3px;
+    }
 
-  window.open(url, "_blank", "noopener,noreferrer");
-});
-</script>
+    .status {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: #91f5c4;
+      font-size: 12px;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      background: #57f4a7;
+      border-radius: 50%;
+      box-shadow: 0 0 10px #57f4a7;
+    }
+
+    main {
+      width: min(1100px, 92%);
+      margin: auto;
+      padding: 45px 0 60px;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 24px 0 32px;
+    }
+
+    .eyebrow {
+      color: var(--cyan);
+      letter-spacing: 3px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    h1 {
+      font-size: clamp(36px, 6vw, 66px);
+      margin: 16px 0;
+      line-height: 1.08;
+      letter-spacing: -2px;
+    }
+
+    .gradient {
+      color: transparent;
+      background: linear-gradient(90deg, #8ea5ff, #45ecf1);
+      background-clip: text;
+      -webkit-background-clip: text;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      line-height: 1.7;
+      max-width: 650px;
+      margin: 0 auto;
+    }
+
+    .searchbox {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      max-width: 780px;
+      margin: 28px auto 12px;
+      padding: 8px;
+      border: 1px solid #6c8cff70;
+      border-radius: 18px;
+      background: rgba(17, 23, 42, .95);
+      box-shadow: 0 0 40px #4d7dff16;
+    }
+
+    .searchbox input {
+      min-width: 0;
+      flex: 1;
+      padding: 14px;
+      color: white;
+      background: transparent;
+      border: 0;
+      outline: 0;
+    }
+
+    .searchbox input::placeholder { color: #8492af; }
+
+    .btn {
+      border: 0;
+      border-radius: 12px;
+      padding: 12px 17px;
+      color: white;
+      background: var(--panel2);
+    }
+
+    .btn.primary {
+      color: #07101e;
+      font-weight: 800;
+      background: linear-gradient(120deg, #8ea5ff, #41e5ef);
+    }
+
+    .hint {
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+      margin-bottom: 28px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 18px;
+      margin-top: 24px;
+    }
+
+    .card {
+      min-width: 0;
+      padding: 23px;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      background: linear-gradient(145deg, #141b30ed, #0d1323ed);
+      box-shadow: 0 12px 35px #00000018;
+    }
+
+    .cardhead {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 15px;
+    }
+
+    .cardicon {
+      display: grid;
+      place-items: center;
+      width: 44px;
+      height: 44px;
+      flex-shrink: 0;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      background: #6c8cff17;
+      font-size: 22px;
+    }
+
+    h2 { margin: 0; font-size: 19px; }
+    .card p { color: var(--muted); font-size: 13px; line-height: 1.6; }
+
+    .field {
+      width: 100%;
+      padding: 13px 14px;
+      margin: 6px 0 10px;
+      color: var(--text);
+      background: #080d1a;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      outline: none;
+    }
+
+    .field:focus { border-color: var(--cyan); }
+
+    select.field option {
+      color: white;
+      background: #11172a;
+    }
+
+    .wide { width: 100%; }
+
+    .chatlog {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      min-height: 145px;
+      max-height: 340px;
+      overflow-y: auto;
+      padding: 12px;
+      margin: 14px 0;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      background: #080d19a8;
+    }
+
+    .message {
+      max-width: 94%;
+      padding: 11px 13px;
+      border-radius: 12px;
+      font-size: 14px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .message.assistant {
+      align-self: flex-start;
+      color: #dce8ff;
+      background: #192541;
+    }
+
+    .message.user {
+      align-self: flex-end;
+      color: #081221;
+      background: linear-gradient(120deg, #91a7ff, #65e7e9);
+    }
+
+    .chatform {
+      display: flex;
+      gap: 8px;
+    }
+
+    .chatform .field {
+      flex: 1;
+      min-width: 0;
+      margin: 0;
+    }
+
+    .result {
+      padding: 13px;
+      min-height: 46px;
+      color: #d8e5ff;
+      background: #080d19;
+      border: 1px solid var(--border);
+      border-radius: 11px;
+      line-height: 1.7;
+      font-size: 14px;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+
+    .quicklinks {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin: 20px 0 0;
+    }
+
+    .quicklinks button {
+      padding: 9px 14px;
+      color: #c9d7fa;
+      background: #121b30;
+      border: 1px solid var(--border);
+      border-radius: 20px;
+    }
+
+    .footer {
+      padding: 22px;
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 12px;
+      text-align: center;
+    }
+
+    @media (max-width: 700px) {
+      .topbar { padding: 13px 4%; }
+      .brand { font-size: 18px; }
+      main { padding-top: 24px; }
+      .grid { grid-template-columns: 1fr; }
+      .searchbox { flex-wrap: wrap; }
+      .searchbox input { flex-basis: 65%; }
+      .searchbox .btn { flex: 1; }
+      .card { padding: 18px; }
+      .status { font-size: 10px; }
+      h1 { letter-spacing: -1px; }
+    }
+  </style>
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <div class="logo">✦</div>
+      <div>
+        NOVA AI
+        <small>SMART BROWSER</small>
+      </div>
+    </div>
+    <div class="status">
+      <span class="dot"></span>
+      <span>AI BROWSER</span>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="eyebrow">YOUR NEXT-GENERATION ASSISTANT</div>
+      <h1>Explore Beyond<br><span class="gradient">The Ordinary.</span></h1>
+      <p class="subtitle">
+        Search the web, ask AI questions, use voice input and translate text
+        from one smart interface.
+      </p>
+
+      <form class="searchbox" id="searchForm">
+        <span aria-hidden="true">⌕</span>
+        <input id="searchInput" type="search"
+          placeholder="Search anything on the web..." required>
+        <button class="btn" id="voiceButton" type="button"
+          title="Voice search" aria-label="Voice search">🎙</button>
+        <button class="btn primary" type="submit">Search ↗</button>
+      </form>
+      <div class="hint" id="voiceStatus">
+        Search powered by Google · Click the microphone to speak
+      </div>
+
+      <div class="quicklinks">
+        <button type="button" data-query="Artificial intelligence">🤖 AI</button>
+        <button type="button" data-query="Latest technology news">🌐 Technology</button>
+        <button type="button" data-query="Computer and laptop repair">💻 Computers</button>
+        <button type="button" data-query="Learn programming online">⌨ Coding</button>
+      </div>
+    </section>
+
+    <section class="grid">
+      <article class="card">
+        <div class="cardhead">
+          <div class="cardicon">✦</div>
+          <div>
+            <h2>AI Assistant</h2>
+            <p>Ask a question and get an AI-generated answer.</p>
+          </div>
+        </div>
+
+        <label for="language">Response language</label>
+        <select class="field" id="language">
+          <option value="English">English</option>
+          <option value="Telugu" selected>తెలుగు (Telugu)</option>
+          <option value="Hindi">हिन्दी (Hindi)</option>
+          <option value="Kannada">ಕನ್ನಡ (Kannada)</option>
+          <option value="Tamil">தமிழ் (Tamil)</option>
+          <option value="Malayalam">മലയാളം (Malayalam)</option>
+          <option value="Bengali">বাংলা (Bengali)</option>
+          <option value="Marathi">मराठी (Marathi)</option>
+          <option value="Spanish">Spanish</option>
+          <option value="French">French</option>
+          <option value="Arabic">Arabic</option>
+        </select>
+
+        <div class="chatlog" id="chatLog" aria-live="polite">
+          <div class="message assistant">
+            నమస్కారం! నేను NOVA AI. మీ ప్రశ్న అడగండి.
+            Hello! I am NOVA AI. Ask me anything.
+          </div>
+        </div>
+
+        <form class="chatform" id="chatForm">
+          <input class="field" id="chatInput" autocomplete="off"
+            placeholder="Ask NOVA anything..." required>
+          <button class="btn primary" id="sendButton" type="submit">
+            Send
+          </button>
+        </form>
+        <p>AI responses require an active Cloudflare Worker and Gemini API secret.</p>
+      </article>
+
+      <article class="card">
+        <div class="cardhead">
+          <div class="cardicon">⇄</div>
+          <div>
+            <h2>AI Translator</h2>
+            <p>Translate text using your connected AI backend.</p>
+          </div>
+        </div>
+
+        <label for="translateInput">Text to translate</label>
+        <textarea class="field" id="translateInput" rows="4"
+          placeholder="Enter text here..."></textarea>
+
+        <label for="targetLanguage">Translate into</label>
+        <select class="field" id="targetLanguage">
+          <option>Telugu</option>
+          <option>English</option>
+          <option>Hindi</option>
+          <option>Kannada</option>
+          <option>Tamil</option>
+          <option>Malayalam</option>
+          <option>Spanish</option>
+          <option>French</option>
+          <option>Arabic</option>
+        </select>
+
+        <button class="btn primary wide" id="translateButton" type="button">
+          Translate Text
+        </button>
+
+        <div style="height:12px"></div>
+        <div class="result" id="translateResult" aria-live="polite">
+          Your translation will appear here.
+        </div>
+        <div style="height:10px"></div>
+        <button class="btn wide" id="copyTranslation" type="button">
+          Copy Translation
+        </button>
+      </article>
+
+      <article class="card">
+        <div class="cardhead">
+          <div class="cardicon">🌐</div>
+          <div>
+            <h2>Web Explorer</h2>
+            <p>Quickly open popular websites.</p>
+          </div>
+        </div>
+        <button class="btn wide" type="button" data-url="https://www.google.com">
+          🔎 Google Search
+        </button>
+        <div style="height:10px"></div>
+        <button class="btn wide" type="button" data-url="https://www.youtube.com">
+          ▶ YouTube
+        </button>
+        <div style="height:10px"></div>
+        <button class="btn wide" type="button" data-url="https://github.com">
+          💻 GitHub
+        </button>
+        <div style="height:10px"></div>
+        <button class="btn wide" type="button" data-url="https://www.wikipedia.org">
+          📚 Wikipedia
+        </button>
+      </article>
+
+      <article class="card">
+        <div class="cardhead">
+          <div class="cardicon">⚙</div>
+          <div>
+            <h2>Browser Settings</h2>
+            <p>Check your browser capabilities.</p>
+          </div>
+        </div>
+        <div class="result" id="browserInfo">Checking browser...</div>
+        <div style="height:12px"></div>
+        <button class="btn wide" id="testBackend" type="button">
+          Test AI Backend
+        </button>
+        <div style="height:10px"></div>
+        <div class="result" id="backendStatus" aria-live="polite">
+          Backend status has not been checked.
+        </div>
+      </article>
+    </section>
+  </main>
+
+  <footer class="footer">
+    NOVA AI Browser · Smart search · AI assistant · Translation
+    <br><br>
+    AI answers are generated by the connected AI service. Verify important information.
+  </footer>
+
+  <script>
+    "use strict";
+
+    // Your Cloudflare Worker URL. Never put your Gemini API key here.
+    const API_URL =
+      "https://withered-surf-afdbnova-ai-backend.maheshmas37.workers.dev/";
+
+    const $ = (id) => document.getElementById(id);
+
+    async function askAI(message) {
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ message })
+      });
+
+      let data;
+      try {
+        data = await response.json();
+      } catch {
+        throw new Error("The backend returned an invalid response.");
+      }
+
+      if (!response.ok) {
+        throw new Error(
+          data.details || data.error || ("HTTP error " + response.status)
+        );
+      }
+
+      if (!data.answer) {
+        throw new Error("The AI returned an empty answer.");
+      }
+
+      return data.answer;
+    }
+
+    // Web search
+    $("searchForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const query = $("searchInput").value.trim();
+      if (!query) return;
+
+      window.open(
+        "https://www.google.com/search?q=" + encodeURIComponent(query),
+        "_blank",
+        "noopener,noreferrer"
+      );
+    });
+
+    document.querySelectorAll("[data-query]").forEach((button) => {
+      button.addEventListener("click", () => {
+        $("searchInput").value = button.dataset.query;
+        $("searchForm").requestSubmit();
+      });
+    });
+
+    document.querySelectorAll("[data-url]").forEach((button) => {
+      button.addEventListener("click", () => {
+        window.open(button.dataset.url, "_blank", "noopener,noreferrer");
+      });
+    });
+
+    // Voice search (browser support varies)
+    $("voiceButton").addEventListener("click", () => {
+      const SpeechRecognition =
+        window.SpeechRecognition || window.webkitSpeechRecognition;
+
+      if (!SpeechRecognition) {
+        $("voiceStatus").textContent =
+          "Voice search is not supported in this browser. Try Google Chrome.";
+        return;
+      }
+
+      const recognition = new SpeechRecognition();
+      recognition.lang = "en-IN";
+      recognition.interimResults = false;
+      recognition.maxAlternatives = 1;
+
+      $("voiceStatus").textContent = "Listening... Speak now.";
+
+      recognition.onresult = (event) => {
+        const transcript = event.results[0][0].transcript;
+        $("searchInput").value = transcript;
+        $("voiceStatus").textContent = "Voice captured: " + transcript;
+      };
+
+      recognition.onerror = (event) => {
+        $("voiceStatus").textContent =
+          "Voice search error: " + event.error +
+          ". Check microphone permission.";
+      };
+
+      recognition.onend = () => {
+        if ($("voiceStatus").textContent === "Listening... Speak now.") {
+          $("voiceStatus").textContent = "Voice search ended.";
+        }
+      };
+
+      recognition.start();
+    });
+
+    // AI Assistant
+    function addMessage(type, content) {
+      const message = document.createElement("div");
+      message.className = "message " + type;
+      message.textContent = content;
+      $("chatLog").appendChild(message);
+      $("chatLog").scrollTop = $("chatLog").scrollHeight;
+      return message;
+    }
+
+    $("chatForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const input = $("chatInput");
+      const question = input.value.trim();
+      if (!question) return;
+
+      const language = $("language").value;
+      addMessage("user", question);
+      input.value = "";
+
+      const reply = addMessage("assistant", "NOVA AI is thinking...");
+      $("sendButton").disabled = true;
+
+      try {
+        reply.textContent = await askAI(
+          "Answer in " + language +
+          ". Be helpful and clear. User question: " + question
+        );
+      } catch (error) {
+        reply.textContent =
+          "Could not connect to NOVA AI: " + error.message +
+          "\n\nCheck that the Cloudflare Worker is deployed and the Gemini API secret is configured.";
+      } finally {
+        $("sendButton").disabled = false;
+        $("chatLog").scrollTop = $("chatLog").scrollHeight;
+        input.focus();
+      }
+    });
+
+    // AI Translator
+    $("translateButton").addEventListener("click", async () => {
+      const text = $("translateInput").value.trim();
+      const target = $("targetLanguage").value;
+      const button = $("translateButton");
+
+      if (!text) {
+        $("translateResult").textContent = "Please enter text to translate.";
+        return;
+      }
+
+      button.disabled = true;
+      $("translateResult").textContent = "Translating...";
+
+      try {
+        const result = await askAI(
+          "Translate the following text into " + target +
+          ". Return only the translation, without explanations:\n\n" + text
+        );
+        $("translateResult").textContent = result;
+      } catch (error) {
+        $("translateResult").textContent =
+          "Translation failed: " + error.message;
+      } finally {
+        button.disabled = false;
+      }
+    });
+
+    $("copyTranslation").addEventListener("click", async () => {
+      const result = $("translateResult").textContent;
+
+      try {
+        await navigator.clipboard.writeText(result);
+        $("copyTranslation").textContent = "Copied!";
+        setTimeout(() => {
+          $("copyTranslation").textContent = "Copy Translation";
+        }, 1500);
+      } catch {
+        $("translateResult").textContent +=
+          "\n\nCopy is unavailable. Please select and copy the text manually.";
+      }
+    });
+
+    // Backend connection test
+    $("testBackend").addEventListener("click", async () => {
+      const button = $("testBackend");
+      const status = $("backendStatus");
+
+      button.disabled = true;
+      status.textContent = "Testing AI connection...";
+
+      try {
+        const answer = await askAI(
+          "Reply with exactly: NOVA AI connection successful."
+        );
+        status.textContent = "Connected successfully.\n" + answer;
+      } catch (error) {
+        status.textContent = "Connection failed.\n" + error.message;
+      } finally {
+        button.disabled = false;
+      }
+    });
+
+    // Browser capability information
+    $("browserInfo").textContent =
+      "Browser: " + navigator.userAgent +
+      "\nVoice input: " +
+      ((window.SpeechRecognition || window.webkitSpeechRecognition)
+        ? "Supported" : "Not detected") +
+      "\nSecure connection: " +
+      (window.isSecureContext ? "Yes" : "No");
+  </script>
 </body>
 </html>
