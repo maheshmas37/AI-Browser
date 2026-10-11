@@ -1,0 +1,349 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#070b14">
+<title>NOVA — AI Browser</title>
+<style>
+:root{
+  color-scheme:dark;
+  --bg:#070b14;
+  --panel:#0d1423;
+  --panel2:#111c30;
+  --border:#25334d;
+  --text:#f3f7ff;
+  --muted:#91a1bc;
+  --cyan:#55e7ff;
+  --purple:#9b80ff;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font-family:Inter,Segoe UI,Arial,sans-serif;
+  min-height:100vh;overflow-x:hidden;
+}
+body:before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;
+  background:
+   radial-gradient(ellipse at 50% 15%,#17416a55,transparent 48%),
+   radial-gradient(ellipse at 90% 85%,#6524a622,transparent 36%);
+}
+button,input{font:inherit}
+button{cursor:pointer}
+button:focus-visible,a:focus-visible,input:focus-visible{
+  outline:2px solid var(--cyan);outline-offset:3px;
+}
+.topbar{
+  height:74px;padding:0 6%;display:flex;align-items:center;
+  justify-content:space-between;border-bottom:1px solid #ffffff10;
+}
+.brand{display:flex;align-items:center;gap:12px;font-weight:850;letter-spacing:1.5px}
+.brand-icon{
+  width:42px;height:42px;display:grid;place-items:center;
+  border-radius:14px;color:#06111c;font-size:24px;
+  background:linear-gradient(135deg,var(--cyan),var(--purple));
+  box-shadow:0 0 25px #55e7ff24;
+}
+.brand-name span{color:var(--cyan)}
+.top-actions{display:flex;align-items:center;gap:16px}
+.online{font-size:11px;color:#8af5c8;letter-spacing:1px}
+.online:before{
+  content:"";display:inline-block;width:7px;height:7px;
+  border-radius:50%;background:#4fe4a3;margin-right:8px;
+}
+.icon-button{
+  height:40px;width:40px;border:1px solid var(--border);
+  background:var(--panel);color:var(--text);border-radius:12px;
+}
+main{width:min(1020px,100%);margin:auto;padding:68px 24px 35px}
+.hero{text-align:center}
+.eyebrow{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:9px 14px;border:1px solid #426b8c88;
+  border-radius:30px;background:#12213a99;
+  font-size:11px;letter-spacing:1.5px;color:#a6eaff;
+}
+h1{
+  margin:25px 0 14px;font-size:clamp(42px,7vw,76px);
+  line-height:1.07;letter-spacing:-3px;font-weight:800;
+}
+.gradient-text{
+  color:var(--cyan);
+  background:linear-gradient(95deg,#55e7ff,#a58aff);
+  -webkit-background-clip:text;background-clip:text;
+  -webkit-text-fill-color:transparent;
+}
+.subtitle{
+  color:var(--muted);font-size:15px;line-height:1.8;
+  margin:0 auto 32px;
+}
+.searchbox{
+  width:min(760px,100%);margin:auto;display:flex;align-items:center;
+  gap:11px;padding:9px 10px 9px 19px;
+  border:1px solid #405579;border-radius:19px;
+  background:linear-gradient(120deg,#111a2b,#0d1423);
+  box-shadow:0 15px 55px #0005,0 0 0 5px #55e7ff08;
+  transition:border-color .2s,box-shadow .2s;
+}
+.searchbox:focus-within{
+  border-color:var(--cyan);box-shadow:0 0 28px #55e7ff16;
+}
+.search-symbol{font-size:24px;color:var(--cyan)}
+.searchbox input{
+  flex:1;min-width:0;border:0;outline:0;
+  background:transparent;color:var(--text);padding:13px 0;
+  font-size:15px;
+}
+.searchbox input::placeholder{color:#7586a4}
+.voice-button{
+  flex-shrink:0;width:43px;height:43px;border-radius:12px;
+  border:1px solid #344764;background:#17243a;color:white;
+}
+.voice-button:hover{border-color:var(--cyan)}
+.search-button{
+  flex-shrink:0;border:0;border-radius:12px;padding:14px 21px;
+  color:#07111d;font-weight:800;
+  background:linear-gradient(110deg,var(--cyan),#9c91ff);
+}
+.search-button:hover{filter:brightness(1.12)}
+.search-hint{font-size:11px;color:#7284a1;margin:15px 0 42px}
+.section-heading{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:16px;gap:10px;
+}
+.section-heading h2{
+  font-size:11px;letter-spacing:2px;color:#a7b6cf;margin:0;
+}
+.section-heading span{font-size:11px;color:#7585a0}
+.shortcuts{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.shortcut{
+  min-width:0;display:flex;align-items:center;gap:12px;
+  text-decoration:none;color:var(--text);padding:17px 13px;
+  border:1px solid var(--border);border-radius:16px;
+  background:linear-gradient(145deg,#121c2e,#0d1422);
+  transition:transform .2s,border-color .2s;
+}
+.shortcut:hover{transform:translateY(-3px);border-color:#55e7ff88}
+.site-icon{
+  flex-shrink:0;width:42px;height:42px;display:grid;place-items:center;
+  border:1px solid #ffffff0a;border-radius:13px;
+  background:#1c2940;font-size:20px;
+}
+.shortcut strong{display:block;font-size:13px}
+.shortcut small{display:block;color:var(--muted);font-size:10px;margin-top:5px}
+.ai-card{
+  margin-top:32px;padding:24px;border:1px solid #34466a;
+  border-radius:20px;
+  background:linear-gradient(120deg,#121d32,#17142d);
+}
+.ai-header{display:flex;align-items:center;gap:13px}
+.ai-icon{
+  width:44px;height:44px;display:grid;place-items:center;
+  border-radius:14px;color:#08121d;font-size:23px;
+  background:linear-gradient(135deg,var(--cyan),var(--purple));
+}
+.ai-header h2{font-size:16px;margin:0}
+.ai-header p{font-size:12px;color:var(--muted);margin:6px 0 0}
+.ai-prompts{display:flex;flex-wrap:wrap;gap:10px;margin-top:21px}
+.prompt{
+  padding:11px 14px;border:1px solid #354662;border-radius:12px;
+  color:#d8e3f7;background:#ffffff05;font-size:12px;
+}
+.prompt:hover{border-color:var(--cyan);color:white}
+.ai-note{
+  margin:17px 0 0;color:#8293b0;font-size:11px;line-height:1.6;
+}
+.footer{
+  display:flex;justify-content:space-between;gap:12px;
+  margin-top:38px;padding-top:20px;
+  border-top:1px solid #ffffff10;color:#64748d;font-size:11px;
+}
+@media(max-width:650px){
+  .topbar{height:66px;padding:0 17px}
+  .online{display:none}
+  main{padding:53px 16px 28px}
+  h1{letter-spacing:-2px}
+  .subtitle{font-size:13px}
+  .searchbox{gap:7px;padding:7px 8px 7px 12px}
+  .searchbox input{font-size:12px}
+  .search-symbol{font-size:20px}
+  .voice-button{width:37px;height:39px}
+  .search-button{padding:13px 11px;font-size:12px}
+  .shortcuts{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+  .shortcut{padding:13px 10px;gap:9px}
+  .site-icon{width:37px;height:37px}
+  .ai-card{padding:18px}
+  .footer{flex-direction:column;text-align:center}
+}
+@media(max-width:360px){
+  .search-hint{font-size:10px}
+  .searchbox{gap:5px}
+  .search-button{padding:12px 8px}
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <div class="brand-icon">✧</div>
+    <div class="brand-name">NOVA <span>AI</span></div>
+  </div>
+  <div class="top-actions">
+    <span class="online">READY TO EXPLORE</span>
+    <button class="icon-button" id="focusBtn" title="Focus search"
+      aria-label="Focus search">⌕</button>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <div class="eyebrow">✦ &nbsp; THE FUTURE OF SEARCH</div>
+    <h1>Think beyond.<br><span class="gradient-text">Explore everything.</span></h1>
+    <p class="subtitle">
+      Your gateway to the web, ideas and discovery.<br>
+      One search. Endless possibilities.
+    </p>
+
+    <form class="searchbox" id="searchForm">
+      <span class="search-symbol" aria-hidden="true">⌕</span>
+      <input id="query" type="text"
+        placeholder="Search anything or enter a website..."
+        aria-label="Search the web" autocomplete="off" required>
+      <button type="button" class="voice-button" id="voiceBtn"
+        title="Voice search" aria-label="Voice search">🎙</button>
+      <button type="submit" class="search-button">Search ↗</button>
+    </form>
+    <p class="search-hint">↵ Press Enter to search &nbsp; · &nbsp; 🎙 Voice search where supported</p>
+  </section>
+
+  <section aria-labelledby="quickTitle">
+    <div class="section-heading">
+      <h2 id="quickTitle">QUICK ACCESS</h2>
+      <span>Your favourite destinations</span>
+    </div>
+    <div class="shortcuts">
+      <a class="shortcut" href="https://www.google.com" target="_blank" rel="noopener noreferrer">
+        <span class="site-icon">🔎</span>
+        <span><strong>Google</strong><small>Search the web</small></span>
+      </a>
+      <a class="shortcut" href="https://www.youtube.com" target="_blank" rel="noopener noreferrer">
+        <span class="site-icon">▶</span>
+        <span><strong>YouTube</strong><small>Watch & discover</small></span>
+      </a>
+      <a class="shortcut" href="https://mail.google.com" target="_blank" rel="noopener noreferrer">
+        <span class="site-icon">✉</span>
+        <span><strong>Gmail</strong><small>Your inbox</small></span>
+      </a>
+      <a class="shortcut" href="https://github.com" target="_blank" rel="noopener noreferrer">
+        <span class="site-icon">⌘</span>
+        <span><strong>GitHub</strong><small>Build & create</small></span>
+      </a>
+    </div>
+  </section>
+
+  <section class="ai-card" aria-labelledby="aiTitle">
+    <div class="ai-header">
+      <div class="ai-icon">✧</div>
+      <div>
+        <h2 id="aiTitle">AI Discovery</h2>
+        <p>What would you like to explore today?</p>
+      </div>
+    </div>
+    <div class="ai-prompts">
+      <button class="prompt" data-query="Explain artificial intelligence in simple words">✦ Explain a topic</button>
+      <button class="prompt" data-query="Discover interesting facts about space">◎ Discover something new</button>
+      <button class="prompt" data-query="Best free productivity tools">↗ Find useful tools</button>
+    </div>
+    <p class="ai-note">
+      Search suggestions open Google results. A connected AI service is needed
+      to provide direct AI-generated answers.
+    </p>
+  </section>
+
+  <footer class="footer">
+    <span>✧ NOVA AI BROWSER</span>
+    <span>Designed for curious minds</span>
+  </footer>
+</main>
+
+<script>
+"use strict";
+
+const query = document.getElementById("query");
+const searchForm = document.getElementById("searchForm");
+
+function searchWeb(value) {
+  const text = value.trim();
+  if (!text) {
+    query.focus();
+    return;
+  }
+
+  const looksLikeUrl =
+    /^(https?:\/\/)?([\w-]+\.)+[a-z]{2,}([/?#][^\s]*)?$/i.test(text);
+
+  let destination;
+  if (looksLikeUrl) {
+    destination = /^https?:\/\//i.test(text)
+      ? text
+      : "https://" + text;
+  } else {
+    destination =
+      "https://www.google.com/search?q=" +
+      encodeURIComponent(text);
+  }
+
+  window.open(destination, "_blank", "noopener,noreferrer");
+}
+
+searchForm.addEventListener("submit", function(event) {
+  event.preventDefault();
+  searchWeb(query.value);
+});
+
+document.getElementById("focusBtn").addEventListener("click", function() {
+  query.focus();
+});
+
+document.querySelectorAll("[data-query]").forEach(function(button) {
+  button.addEventListener("click", function() {
+    query.value = button.dataset.query;
+    searchWeb(query.value);
+  });
+});
+
+document.getElementById("voiceBtn").addEventListener("click", function() {
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+
+  if (!SpeechRecognition) {
+    alert("Voice search is not supported by this browser. Try Chrome.");
+    return;
+  }
+
+  const recognition = new SpeechRecognition();
+  recognition.lang = "en-IN";
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+
+  recognition.onresult = function(event) {
+    const transcript = event.results[0][0].transcript;
+    query.value = transcript;
+    searchWeb(transcript);
+  };
+
+  recognition.onerror = function() {
+    alert("Voice search could not start. Please try again.");
+  };
+
+  try {
+    recognition.start();
+  } catch (error) {
+    alert("Voice search is already running. Please try again.");
+  }
+});
+</script>
+</body>
+</html>
