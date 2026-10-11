@@ -437,6 +437,25 @@
         <p>AI responses require an active Cloudflare Worker and Gemini API secret.</p>
       </article>
 
+      <article class="card" id="mediaCard">
+        <div class="cardhead">
+          <div class="cardicon">📹</div>
+          <div>
+            <h2>Live Camera & Screen Share</h2>
+            <p>Start your camera or choose a screen/window to preview it live.</p>
+          </div>
+        </div>
+        <video id="mediaPreview" autoplay muted playsinline
+          style="display:block;width:100%;max-height:320px;min-height:180px;object-fit:contain;background:#050811;border:1px solid var(--border);border-radius:13px"></video>
+        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
+          <button class="btn primary" id="startCameraButton" type="button">📷 Start Camera</button>
+          <button class="btn" id="shareScreenButton" type="button">🖥 Share Screen</button>
+          <button class="btn" id="stopMediaButton" type="button">⏹ Stop Sharing</button>
+        </div>
+        <p id="mediaStatus" aria-live="polite">Camera and screen are off. Choose an option to begin.</p>
+        <p><strong>Privacy:</strong> Camera and screen are only previewed in this page. They are not sent to the AI backend in this version. Stop sharing any time.</p>
+      </article>
+
       <article class="card">
         <div class="cardhead">
           <div class="cardicon">⇄</div>
@@ -861,6 +880,77 @@
     $("stopSpeechButton").addEventListener("click", () => {
       if ("speechSynthesis" in window) window.speechSynthesis.cancel();
       $("voiceReplyStatus").textContent = "Voice playback stopped.";
+    });
+
+    // Camera and screen sharing: local preview only. The current text-only AI Worker
+    // does not receive or analyze these video frames.
+    let mediaStream = null;
+    const mediaPreview = $("mediaPreview");
+    const mediaStatus = $("mediaStatus");
+
+    async function stopMediaSharing(updateStatus = true) {
+      if (mediaStream) {
+        mediaStream.getTracks().forEach((track) => track.stop());
+        mediaStream = null;
+      }
+      mediaPreview.srcObject = null;
+      if (updateStatus) mediaStatus.textContent = "Camera/screen sharing stopped.";
+    }
+
+    async function startMediaStream(stream, label) {
+      await stopMediaSharing(false);
+      mediaStream = stream;
+      mediaPreview.srcObject = stream;
+      mediaStatus.textContent = label + " is active. To end it, press Stop Sharing or use Chrome's sharing indicator.";
+      stream.getVideoTracks().forEach((track) => {
+        track.addEventListener("ended", () => {
+          if (mediaStream === stream) {
+            stopMediaSharing(false);
+            mediaStatus.textContent = label + " ended.";
+          }
+        }, { once: true });
+      });
+    }
+
+    $("startCameraButton").addEventListener("click", async () => {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+        mediaStatus.textContent = "Camera access is unavailable. Open this site in Chrome over HTTPS and check camera permissions.";
+        return;
+      }
+      try {
+        mediaStatus.textContent = "Requesting camera permission...";
+        const stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "user" },
+          audio: false
+        });
+        await startMediaStream(stream, "Camera preview");
+      } catch (error) {
+        mediaStatus.textContent = "Camera could not start: " + (error.message || error.name) + ". Allow camera access in Chrome site settings.";
+      }
+    });
+
+    $("shareScreenButton").addEventListener("click", async () => {
+      if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
+        mediaStatus.textContent = "Screen sharing is unavailable in this browser. Use the latest Chrome on HTTPS.";
+        return;
+      }
+      try {
+        mediaStatus.textContent = "Choose a screen, window, or browser tab in the sharing dialog...";
+        const stream = await navigator.mediaDevices.getDisplayMedia({
+          video: true,
+          audio: false
+        });
+        await startMediaStream(stream, "Screen sharing preview");
+      } catch (error) {
+        mediaStatus.textContent = error.name === "NotAllowedError"
+          ? "Screen sharing was cancelled or permission was denied. Press Share Screen and choose a source."
+          : "Screen sharing could not start: " + (error.message || error.name);
+      }
+    });
+
+    $("stopMediaButton").addEventListener("click", () => stopMediaSharing(true));
+    window.addEventListener("pagehide", () => {
+      if (mediaStream) mediaStream.getTracks().forEach((track) => track.stop());
     });
 
     // AI Assistant
