@@ -1,1354 +1,347 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#080b16">
-  <meta name="description" content="NOVA AI Browser - Smart search, AI assistant, voice search and translation.">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#f8fbff" />
   <title>NOVA AI Browser</title>
-
   <style>
     :root {
-      --bg: #080b16;
-      --panel: #11172a;
-      --panel2: #171f36;
-      --text: #edf3ff;
-      --muted: #9baac8;
-      --blue: #6c8cff;
-      --cyan: #41e5ef;
-      --border: rgba(160, 183, 255, .17);
+      --blue: #0b73ff;
+      --purple: #783cff;
+      --green: #08a878;
+      --orange: #ff8b18;
+      --red: #f04455;
+      --ink: #10264f;
+      --muted: #7385a8;
+      --line: #e7edf8;
     }
-
     * { box-sizing: border-box; }
-
     body {
       margin: 0;
       min-height: 100vh;
-      color: var(--text);
-      background:
-        radial-gradient(ellipse at 15% 5%, #17254b 0, transparent 38%),
-        radial-gradient(ellipse at 90% 50%, #102a3d 0, transparent 35%),
-        var(--bg);
+      color: var(--ink);
       font-family: Inter, "Segoe UI", Arial, sans-serif;
+      background:
+        radial-gradient(ellipse at 50% 30%, rgba(222,239,255,.45), transparent 55%),
+        #fbfdff;
     }
-
-    button, input, select, textarea { font: inherit; }
-
-    button {
-      cursor: pointer;
-      transition: .2s ease;
-    }
-
-    button:hover { filter: brightness(1.13); }
-    button:disabled { opacity: .55; cursor: wait; }
-
-    .topbar {
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    .browser-bar {
+      height: 58px;
       display: flex;
       align-items: center;
-      justify-content: space-between;
       gap: 16px;
-      padding: 18px 5%;
-      border-bottom: 1px solid var(--border);
-      background: rgba(8, 11, 22, .75);
-      backdrop-filter: blur(16px);
-      position: sticky;
-      top: 0;
-      z-index: 10;
+      padding: 0 22px;
+      background: linear-gradient(100deg, #e9f5ff, #f7efff 55%, #fff1ed);
+      border-bottom: 1px solid #e6ebf4;
     }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 22px;
-      font-weight: 800;
-      letter-spacing: 1.5px;
+    .tab {
+      display: flex; align-items: center; gap: 9px;
+      padding: 10px 14px;
+      background: rgba(255,255,255,.86);
+      border-radius: 13px 13px 0 0;
+      font-size: 14px; color: #243653;
     }
-
-    .logo {
-      display: grid;
-      place-items: center;
-      width: 42px;
-      height: 42px;
-      border-radius: 14px;
-      background: linear-gradient(135deg, var(--blue), var(--cyan));
-      color: #07101e;
-      box-shadow: 0 0 28px #41e5ef45;
-      font-size: 24px;
+    .mini-logo {
+      width: 17px; height: 17px; border-radius: 6px;
+      background: conic-gradient(from 25deg, #ffb21a, #f34d87, #7a48ff, #08b9ec, #08b878, #ffb21a);
+      display: inline-block;
     }
-
-    .brand small {
-      display: block;
-      margin-top: 3px;
-      color: var(--muted);
-      font-size: 10px;
-      letter-spacing: 3px;
+    .tab-close { margin-left: 28px; color: #51627c; }
+    .plus { font-size: 23px; color: #233958; }
+    .window-controls { margin-left: auto; display: flex; gap: 24px; color: #243653; }
+    .toolbar {
+      min-height: 54px; display: flex; align-items: center; gap: 18px;
+      padding: 8px 24px; border-bottom: 1px solid #edf1f7;
+      background: rgba(255,255,255,.78);
     }
-
-    .status {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      color: #91f5c4;
-      font-size: 12px;
+    .nav-icon { font-size: 22px; color: #6c7d99; }
+    .address {
+      flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px;
+      height: 40px; padding: 0 16px; border-radius: 24px;
+      background: #f2f6fc; color: #7a8aaa; border: 1px solid #edf1f7;
     }
-
-    .dot {
-      width: 8px;
-      height: 8px;
-      background: #57f4a7;
-      border-radius: 50%;
-      box-shadow: 0 0 10px #57f4a7;
+    .address input { border: 0; outline: 0; background: transparent; width: 100%; color: #334968; }
+    .top-links { display: flex; gap: 20px; align-items: center; white-space: nowrap; }
+    .top-links button { border: 0; background: transparent; color: #263852; display: flex; gap: 7px; align-items: center; }
+    .gmail-mark { color: #e94c45; font-size: 21px; font-weight: 800; }
+    .image-mark { font-size: 19px; }
+    .apps { width: 38px; height: 38px; border-radius: 50%; border: 0; background: #f0f4fb; color: #415575; font-size: 22px; }
+    main { max-width: 1450px; margin: 0 auto; padding: 22px 34px 70px; }
+    .brand { text-align: center; padding: 7px 0 24px; }
+    .brand-line { display: flex; align-items: center; justify-content: center; gap: 20px; }
+    .nova-symbol {
+      width: 70px; height: 70px; display: grid; place-items: center;
+      font-size: 57px; font-weight: 900; line-height: 1;
+      color: transparent; background: linear-gradient(135deg,#00c8e8 8%,#087bff 35%,#8a3fff 60%,#ff6ca8 82%);
+      -webkit-background-clip: text; background-clip: text;
+      transform: rotate(-4deg);
     }
-
-    main {
-      width: min(1100px, 92%);
-      margin: auto;
-      padding: 45px 0 60px;
+    .brand-name { margin: 0; font-size: clamp(48px, 6vw, 70px); font-weight: 850; letter-spacing: -3px; line-height: .95; }
+    .brand-name span:nth-child(1) { color: #149bfa; }
+    .brand-name span:nth-child(2) { color: #8547ef; }
+    .brand-name span:nth-child(3) { color: #ffb323; }
+    .brand-name span:nth-child(4) { color: #08bb7a; }
+    .brand-subtitle { margin-top: 9px; font-size: 28px; font-weight: 650; letter-spacing: -.5px; }
+    .tagline { margin: 20px 0 0; color: #8192b2; font-size: 17px; }
+    .tagline b { padding: 0 10px; font-size: 12px; }
+    .tagline b:nth-child(1) { color: #1596ff; }
+    .tagline b:nth-child(2) { color: #a34bff; }
+    .tagline b:nth-child(3) { color: #ff9a20; }
+    .tagline b:nth-child(4) { color: #08bb7a; }
+    .search-box {
+      max-width: 1000px; margin: 0 auto 44px; min-height: 78px;
+      display: flex; align-items: center; gap: 18px; padding: 0 27px;
+      border: 1.5px solid transparent; border-radius: 42px;
+      background: linear-gradient(#fff,#fff) padding-box, linear-gradient(100deg,#1682ff,#b44aff) border-box;
+      box-shadow: 0 13px 28px rgba(53,107,203,.12);
     }
-
-    .hero {
-      text-align: center;
-      padding: 24px 0 32px;
+    .google-g { font-size: 32px; font-weight: 850; color: #4285f4; letter-spacing: -3px; }
+    .search-box input { flex: 1; min-width: 0; border: 0; outline: 0; font-size: 19px; color: #344966; background: transparent; }
+    .search-box input::placeholder { color: #8799b9; }
+    .icon-button { border: 0; background: transparent; font-size: 25px; padding: 5px; }
+    .mic { color: #0c8bdc; }
+    .lens { color: #4385ff; }
+    .quick-actions { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 18px; margin-bottom: 40px; }
+    .quick {
+      min-height: 82px; border-radius: 27px; display: flex; justify-content: center; align-items: center; gap: 13px;
+      border: 1px solid var(--tint-border); background: var(--tint); color: var(--accent);
+      transition: transform .18s ease, box-shadow .18s ease;
     }
-
-    .eyebrow {
-      color: var(--cyan);
-      letter-spacing: 3px;
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    h1 {
-      font-size: clamp(36px, 6vw, 66px);
-      margin: 16px 0;
-      line-height: 1.08;
-      letter-spacing: -2px;
-    }
-
-    .gradient {
-      color: transparent;
-      background: linear-gradient(90deg, #8ea5ff, #45ecf1);
-      background-clip: text;
-      -webkit-background-clip: text;
-    }
-
-    .subtitle {
-      color: var(--muted);
-      line-height: 1.7;
-      max-width: 650px;
-      margin: 0 auto;
-    }
-
-    .searchbox {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      max-width: 780px;
-      margin: 28px auto 12px;
-      padding: 8px;
-      border: 1px solid #6c8cff70;
-      border-radius: 18px;
-      background: rgba(17, 23, 42, .95);
-      box-shadow: 0 0 40px #4d7dff16;
-    }
-
-    .searchbox input {
-      min-width: 0;
-      flex: 1;
-      padding: 14px;
-      color: white;
-      background: transparent;
-      border: 0;
-      outline: 0;
-    }
-
-    .searchbox input::placeholder { color: #8492af; }
-
-    .btn {
-      border: 0;
-      border-radius: 12px;
-      padding: 12px 17px;
-      color: white;
-      background: var(--panel2);
-    }
-
-    .btn.primary {
-      color: #07101e;
-      font-weight: 800;
-      background: linear-gradient(120deg, #8ea5ff, #41e5ef);
-    }
-
-    .hint {
-      color: var(--muted);
-      font-size: 12px;
-      text-align: center;
-      margin-bottom: 28px;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 18px;
-      margin-top: 24px;
-    }
-
+    .quick:hover, .open-button:hover { transform: translateY(-2px); box-shadow: 0 9px 20px rgba(44,91,160,.12); }
+    .quick-icon { width: 52px; height: 52px; display: grid; place-items: center; border-radius: 50%; background: var(--bubble); font-size: 26px; }
+    .quick strong { font-size: 16px; font-weight: 650; white-space: nowrap; }
+    .blue { --accent:#0868f5; --tint:#edf6ff; --tint-border:#d4eaff; --bubble:#d9edff; }
+    .purple { --accent:#6733e8; --tint:#f5efff; --tint-border:#e8dcff; --bubble:#e7d9ff; }
+    .green { --accent:#079d78; --tint:#eafaf6; --tint-border:#c9f0e5; --bubble:#cef6e9; }
+    .orange { --accent:#ee790c; --tint:#fff7e9; --tint-border:#ffebc9; --bubble:#ffedce; }
+    .red { --accent:#e83d50; --tint:#fff0f2; --tint-border:#ffdade; --bubble:#ffdde2; }
+    .cards { display: grid; grid-template-columns: 1.1fr 1.1fr .92fr .98fr; gap: 20px; }
     .card {
-      min-width: 0;
-      padding: 23px;
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      background: linear-gradient(145deg, #141b30ed, #0d1323ed);
-      box-shadow: 0 12px 35px #00000018;
+      min-width: 0; min-height: 310px; padding: 25px 25px 23px; border-radius: 17px;
+      border: 1px solid var(--tint-border); background: linear-gradient(145deg,var(--tint),#fff 125%);
+      display: flex; flex-direction: column;
     }
-
-    .cardhead {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 15px;
+    .card-head { display: flex; align-items: center; gap: 17px; margin-bottom: 17px; }
+    .service-logo { flex: 0 0 62px; width: 62px; height: 62px; display: grid; place-items: center; border-radius: 50%; background: var(--bubble); font-size: 32px; font-weight: 750; }
+    .card h2 { margin: 0; font-size: 23px; letter-spacing: -.4px; }
+    .card p { margin: 0 0 18px; font-size: 14px; line-height: 1.65; color: #476083; }
+    .features { display: flex; justify-content: space-between; gap: 8px; margin: auto 0 20px; }
+    .feature { flex: 1; text-align: center; color: #3b5577; font-size: 12px; }
+    .feature span { width: 43px; height: 43px; margin: 0 auto 7px; display: grid; place-items: center; border-radius: 50%; background: rgba(255,255,255,.72); font-size: 20px; color: var(--accent); }
+    .open-button { border: 0; border-radius: 24px; padding: 13px 18px; color: white; background: var(--accent); font-weight: 650; transition: .18s; }
+    .companion { align-items: center; text-align: center; background: linear-gradient(145deg,#f1f4ff,#f7f1ff); border-color: #e0e5ff; }
+    .bot { width: 112px; height: 90px; margin: -2px auto 7px; display: grid; place-items: center; font-size: 61px; filter: drop-shadow(0 8px 8px rgba(67,103,208,.16)); }
+    .companion h2 { font-size: 21px; }
+    .companion p { margin-top: 8px; margin-bottom: 18px; }
+    .companion .features { width: 100%; }
+    .companion .feature span { color: #3276f5; background: #fff; }
+    .bottom-wave { position: fixed; z-index: -1; bottom: 0; left: 0; width: 100%; height: 80px; pointer-events: none; background: linear-gradient(100deg,rgba(0,191,239,.9),rgba(101,75,255,.78),rgba(255,174,98,.7),rgba(209,74,219,.78)); clip-path: polygon(0 35%,8% 73%,20% 65%,33% 100%,48% 77%,62% 84%,75% 38%,87% 65%,100% 35%,100% 100%,0 100%); opacity: .75; }
+    .toast { position: fixed; left: 50%; bottom: 26px; transform: translate(-50%, 20px); opacity: 0; pointer-events: none; background: #142849; color: #fff; padding: 12px 18px; border-radius: 12px; box-shadow: 0 8px 30px #10264f26; transition: .2s; z-index: 5; max-width: calc(100vw - 32px); text-align: center; }
+    .toast.show { opacity: 1; transform: translate(-50%, 0); }
+    @media (max-width: 1100px) {
+      .quick-actions { grid-template-columns: repeat(3,minmax(0,1fr)); }
+      .cards { grid-template-columns: repeat(2,minmax(0,1fr)); }
     }
-
-    .cardicon {
-      display: grid;
-      place-items: center;
-      width: 44px;
-      height: 44px;
-      flex-shrink: 0;
-      border: 1px solid var(--border);
-      border-radius: 13px;
-      background: #6c8cff17;
-      font-size: 22px;
-    }
-
-    h2 { margin: 0; font-size: 19px; }
-    .card p { color: var(--muted); font-size: 13px; line-height: 1.6; }
-
-    .field {
-      width: 100%;
-      padding: 13px 14px;
-      margin: 6px 0 10px;
-      color: var(--text);
-      background: #080d1a;
-      border: 1px solid var(--border);
-      border-radius: 11px;
-      outline: none;
-    }
-
-    .field:focus { border-color: var(--cyan); }
-
-    select.field option {
-      color: white;
-      background: #11172a;
-    }
-
-    .wide { width: 100%; }
-
-    .chatlog {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      min-height: 145px;
-      max-height: 340px;
-      overflow-y: auto;
-      padding: 12px;
-      margin: 14px 0;
-      border: 1px solid var(--border);
-      border-radius: 13px;
-      background: #080d19a8;
-    }
-
-    .message {
-      max-width: 94%;
-      padding: 11px 13px;
-      border-radius: 12px;
-      font-size: 14px;
-      line-height: 1.6;
-      white-space: pre-wrap;
-      overflow-wrap: anywhere;
-    }
-
-    .message.assistant {
-      align-self: flex-start;
-      color: #dce8ff;
-      background: #192541;
-    }
-
-    .message.user {
-      align-self: flex-end;
-      color: #081221;
-      background: linear-gradient(120deg, #91a7ff, #65e7e9);
-    }
-
-    .chatform {
-      display: flex;
-      gap: 8px;
-    }
-
-    .chatform .field {
-      flex: 1;
-      min-width: 0;
-      margin: 0;
-    }
-
-    .result {
-      padding: 13px;
-      min-height: 46px;
-      color: #d8e5ff;
-      background: #080d19;
-      border: 1px solid var(--border);
-      border-radius: 11px;
-      line-height: 1.7;
-      font-size: 14px;
-      white-space: pre-wrap;
-      overflow-wrap: anywhere;
-    }
-
-    .quicklinks {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-      margin: 20px 0 0;
-    }
-
-    .quicklinks button {
-      padding: 9px 14px;
-      color: #c9d7fa;
-      background: #121b30;
-      border: 1px solid var(--border);
-      border-radius: 20px;
-    }
-
-    .footer {
-      padding: 22px;
-      border-top: 1px solid var(--border);
-      color: var(--muted);
-      font-size: 12px;
-      text-align: center;
-    }
-
-    @media (max-width: 700px) {
-      .topbar { padding: 13px 4%; }
-      .brand { font-size: 18px; }
-      main { padding-top: 24px; }
-      .grid { grid-template-columns: 1fr; }
-      .searchbox { flex-wrap: wrap; }
-      .searchbox input { flex-basis: 65%; }
-      .searchbox .btn { flex: 1; }
-      .card { padding: 18px; }
-      .status { font-size: 10px; }
-      h1 { letter-spacing: -1px; }
+    @media (max-width: 650px) {
+      .browser-bar { padding: 0 10px; gap: 9px; }
+      .tab-close, .window-controls, .toolbar .nav-icon, .top-links button span { display: none; }
+      .toolbar { padding: 8px 12px; gap: 10px; }
+      .top-links { gap: 10px; }
+      .apps { width: 32px; height: 32px; }
+      main { padding: 28px 15px 65px; }
+      .brand-line { gap: 8px; }
+      .nova-symbol { width: 44px; height: 48px; font-size: 43px; }
+      .brand-name { font-size: 48px; letter-spacing: -2px; }
+      .brand-subtitle { font-size: 23px; }
+      .tagline { font-size: 13px; }
+      .tagline b { padding: 0 4px; }
+      .search-box { min-height: 61px; padding: 0 15px; gap: 10px; margin-bottom: 27px; }
+      .search-box input { font-size: 15px; }
+      .google-g { font-size: 26px; }
+      .quick-actions { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; margin-bottom: 24px; }
+      .quick { min-height: 67px; border-radius: 20px; gap: 8px; }
+      .quick-icon { width: 39px; height: 39px; font-size: 21px; }
+      .quick strong { font-size: 13px; }
+      .quick:last-child { grid-column: 1 / -1; }
+      .cards { grid-template-columns: 1fr; gap: 13px; }
+      .card { min-height: 275px; padding: 22px; }
+      .companion { min-height: 260px; }
     }
   </style>
 </head>
-
 <body>
-  <header class="topbar">
-    <div class="brand">
-      <div class="logo">✦</div>
-      <div>
-        NOVA AI
-        <small>SMART BROWSER</small>
-      </div>
+  <header>
+    <div class="browser-bar">
+      <div class="tab"><span class="mini-logo"></span><span>NOVA AI Browser</span><span class="tab-close">×</span></div>
+      <span class="plus">＋</span>
+      <div class="window-controls"><span>−</span><span>□</span><span>×</span></div>
     </div>
-    <div class="status">
-      <span class="dot"></span>
-      <span>AI BROWSER</span>
+    <div class="toolbar">
+      <span class="nav-icon" aria-hidden="true">‹</span>
+      <span class="nav-icon" aria-hidden="true">›</span>
+      <span class="nav-icon" aria-hidden="true">↻</span>
+      <form class="address" id="addressForm">
+        <span>◎</span><input id="addressInput" aria-label="Address bar" placeholder="Search or type a URL" autocomplete="off" />
+        <button class="icon-button" type="submit" aria-label="Go" style="font-size:17px">↵</button>
+      </form>
+      <nav class="top-links">
+        <button type="button" data-action="gmail"><b class="gmail-mark">M</b><span>Gmail</span></button>
+        <button type="button" data-action="images"><span class="image-mark">🌄</span><span>Images</span></button>
+        <button type="button" class="apps" aria-label="Google apps" data-action="apps">⠿</button>
+      </nav>
     </div>
   </header>
 
   <main>
-    <section class="hero">
-      <div class="eyebrow">YOUR NEXT-GENERATION ASSISTANT</div>
-      <h1>Explore Beyond<br><span class="gradient">The Ordinary.</span></h1>
-      <p class="subtitle">
-        Search the web, ask AI questions by voice, analyze a camera/screen frame, and translate text from one smart interface.
-      </p>
-
-      <form class="searchbox" id="searchForm">
-        <span aria-hidden="true">⌕</span>
-        <input id="searchInput" type="search"
-          placeholder="Search anything on the web..." required>
-        <button class="btn" id="voiceButton" type="button"
-          title="Voice search" aria-label="Voice search">🎙</button>
-        <button class="btn primary" type="submit">Web Search ↗</button>
-        <button class="btn" id="aiSearchButton" type="button">✦ AI Live Search</button>
-      </form>
-      <div class="hint" id="voiceStatus">
-        Search powered by Google · Click the microphone to speak
+    <section class="brand" aria-label="NOVA AI Browser">
+      <div class="brand-line">
+        <div class="nova-symbol" aria-hidden="true">N</div>
+        <div>
+          <h1 class="brand-name"><span>N</span><span>O</span><span>V</span><span>A</span></h1>
+          <div class="brand-subtitle">AI Browser</div>
+        </div>
       </div>
-
-      <div class="quicklinks">
-        <button type="button" data-query="Artificial intelligence">🤖 AI</button>
-        <button type="button" data-query="Latest technology news">🌐 Technology</button>
-        <button type="button" data-query="Computer and laptop repair">💻 Computers</button>
-        <button type="button" data-query="Learn programming online">⌨ Coding</button>
-      </div>
+      <p class="tagline">Search <b>●</b> Explore <b>●</b> Ask <b>●</b> Create <b>●</b> Together</p>
     </section>
 
-    <section class="grid">
-      <article class="card">
-        <div class="cardhead">
-          <div class="cardicon">✦</div>
-          <div>
-            <h2>AI Assistant</h2>
-            <p>Ask a question and get an AI-generated answer.</p>
-          </div>
-        </div>
+    <form class="search-box" id="searchForm" role="search">
+      <span class="google-g" aria-hidden="true">G</span>
+      <input id="searchInput" aria-label="Search Google or type a URL" placeholder="Search Google or type a URL" autocomplete="off" />
+      <button class="icon-button mic" type="button" data-action="voice" aria-label="Voice search" title="Voice search">🎙</button>
+      <button class="icon-button lens" type="button" data-action="lens" aria-label="Google Lens" title="Google Lens">▣</button>
+    </form>
 
-        <label for="language">Response language</label>
-        <select class="field" id="language">
-          <option value="English">English</option>
-          <option value="Telugu" selected>తెలుగు (Telugu)</option>
-          <option value="Hindi">हिन्दी (Hindi)</option>
-          <option value="Kannada">ಕನ್ನಡ (Kannada)</option>
-          <option value="Tamil">தமிழ் (Tamil)</option>
-          <option value="Malayalam">മലയാളം (Malayalam)</option>
-          <option value="Bengali">বাংলা (Bengali)</option>
-          <option value="Marathi">मराठी (Marathi)</option>
-          <option value="Spanish">Spanish</option>
-          <option value="French">French</option>
-          <option value="Arabic">Arabic</option>
-        </select>
+    <section class="quick-actions" aria-label="Quick actions">
+      <button class="quick blue" data-action="lens"><span class="quick-icon">▣</span><strong>Google Lens</strong></button>
+      <button class="quick purple" data-action="models"><span class="quick-icon">♧</span><strong>AI Models</strong></button>
+      <button class="quick green" data-action="chatgpt"><span class="quick-icon">◎</span><strong>Live ChatGPT</strong></button>
+      <button class="quick orange" data-action="gemini"><span class="quick-icon">✦</span><strong>Live Gemini</strong></button>
+      <button class="quick red" data-action="screen"><span class="quick-icon">▣</span><strong>Screen Sharing</strong></button>
+    </section>
 
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin:8px 0">
-          <button class="btn" id="newChatButton" type="button">＋ New Chat</button>
-          <button class="btn" id="copyLastButton" type="button">⧉ Copy Last Reply</button>
-          <button class="btn" id="regenerateButton" type="button">↻ Regenerate</button>
-          <button class="btn" id="stopResponseButton" type="button">⏹ Stop Response</button>
+    <section class="cards" aria-label="AI services">
+      <article class="card green">
+        <div class="card-head"><div class="service-logo">◎</div><h2>ChatGPT</h2></div>
+        <p>Get instant answers, ideas, help and more.</p>
+        <div class="features">
+          <div class="feature"><span>🎙</span>Voice</div>
+          <div class="feature"><span>📷</span>Camera</div>
+          <div class="feature"><span>▣</span>Screen Share</div>
+          <div class="feature"><span>☷</span>Text</div>
         </div>
-        <label for="chatHistorySelect">Saved conversations</label>
-        <select class="field" id="chatHistorySelect"><option value="">Current conversation</option></select>
-        <div class="chatlog" id="chatLog" aria-live="polite">
-          <div class="message assistant">
-            నమస్కారం! నేను NOVA AI. మీ ప్రశ్న అడగండి.
-            Hello! I am NOVA AI. Ask me anything.
-          </div>
-        </div>
-
-        <form class="chatform" id="chatForm">
-          <input class="field" id="chatInput" autocomplete="off"
-            placeholder="Ask NOVA anything..." required>
-          <button class="btn primary" id="sendButton" type="submit">
-            Send
-          </button>
-        </form>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px">
-          <input id="fileInput" type="file" accept="image/*,.pdf,.txt,.md,.csv,.json,.html,.css,.js,.py" style="max-width:100%;color:var(--muted);font-size:12px">
-        </div>
-        <p id="fileStatus" aria-live="polite">Attach images, PDFs, or text/code files (up to 5 MB each).</p>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
-          <button class="btn primary" id="liveVoiceButton" type="button">🎙 Start Live Voice</button>
-          <button class="btn" id="stopLiveVoiceButton" type="button">⏹ Stop Live Voice</button>
-          <button class="btn" id="speakAgainButton" type="button">🔊 Speak Last Reply</button>
-          <button class="btn" id="stopSpeechButton" type="button">⏹ Stop Voice</button>
-        </div>
-        <p id="voiceReplyStatus" aria-live="polite">Live Voice is ready. Press Start Live Voice and allow microphone access. Automatic voice replies are enabled.</p>
-        <p>AI responses require an active Cloudflare Worker and Gemini API secret.</p>
+        <button class="open-button" data-action="chatgpt">Open ChatGPT&nbsp; →</button>
       </article>
 
-      <article class="card" id="mediaCard">
-        <div class="cardhead">
-          <div class="cardicon">📹</div>
-          <div>
-            <h2>Live Camera & Screen Share</h2>
-            <p>Start your camera or choose a screen/window to preview it live.</p>
-          </div>
+      <article class="card blue">
+        <div class="card-head"><div class="service-logo">✦</div><h2>Gemini</h2></div>
+        <p>Think bigger. Get more done with Google's AI.</p>
+        <div class="features">
+          <div class="feature"><span>🎙</span>Voice</div>
+          <div class="feature"><span>📷</span>Camera</div>
+          <div class="feature"><span>▣</span>Screen Share</div>
+          <div class="feature"><span>▢</span>Tabs</div>
         </div>
-        <video id="mediaPreview" autoplay muted playsinline
-          style="display:block;width:100%;max-height:320px;min-height:180px;object-fit:contain;background:#050811;border:1px solid var(--border);border-radius:13px"></video>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">
-          <button class="btn primary" id="startCameraButton" type="button">📷 Start Camera</button>
-          <button class="btn" id="shareScreenButton" type="button">🖥 Share Screen</button>
-          <button class="btn" id="stopMediaButton" type="button">⏹ Stop Sharing</button>
-          <button class="btn primary" id="analyzeFrameButton" type="button">✦ Ask NOVA About This View</button>
-        </div>
-        <p id="mediaStatus" aria-live="polite">Camera and screen are off. Choose an option to begin.</p>
-        <p><strong>Privacy:</strong> Camera/screen frames are sent to your configured AI backend only when you press “Ask NOVA About This View”. Nothing is captured automatically. Stop sharing any time.</p>
+        <button class="open-button" data-action="gemini">Open Gemini&nbsp; →</button>
       </article>
 
-      <article class="card">
-        <div class="cardhead">
-          <div class="cardicon">⇄</div>
-          <div>
-            <h2>AI Translator</h2>
-            <p>Translate text using your connected AI backend.</p>
-          </div>
+      <article class="card purple">
+        <div class="card-head"><div class="service-logo">▣</div><h2>Google Lens</h2></div>
+        <p>Search what you see. Get instant information.</p>
+        <div class="features">
+          <div class="feature"><span>▧</span>Image Search</div>
+          <div class="feature"><span>⌕</span>Visual Questions</div>
         </div>
-
-        <label for="translateInput">Text to translate</label>
-        <textarea class="field" id="translateInput" rows="4"
-          placeholder="Enter text here..."></textarea>
-
-        <label for="targetLanguage">Translate into</label>
-        <select class="field" id="targetLanguage">
-          <option>Telugu</option>
-          <option>English</option>
-          <option>Hindi</option>
-          <option>Kannada</option>
-          <option>Tamil</option>
-          <option>Malayalam</option>
-          <option>Spanish</option>
-          <option>French</option>
-          <option>Arabic</option>
-        </select>
-
-        <button class="btn primary wide" id="translateButton" type="button">
-          Translate Text
-        </button>
-
-        <div style="height:12px"></div>
-        <div class="result" id="translateResult" aria-live="polite">
-          Your translation will appear here.
-        </div>
-        <div style="height:10px"></div>
-        <button class="btn wide" id="copyTranslation" type="button">
-          Copy Translation
-        </button>
+        <button class="open-button" data-action="lens">Open Lens&nbsp; →</button>
       </article>
 
-      <article class="card">
-        <div class="cardhead">
-          <div class="cardicon">🌐</div>
-          <div>
-            <h2>Web Explorer</h2>
-            <p>Quickly open popular websites.</p>
-          </div>
-        </div>
-        <button class="btn wide" type="button" data-url="https://www.google.com">
-          🔎 Google Search
-        </button>
-        <div style="height:10px"></div>
-        <button class="btn wide" type="button" data-url="https://www.youtube.com">
-          ▶ YouTube
-        </button>
-        <div style="height:10px"></div>
-        <button class="btn wide" type="button" data-url="https://github.com">
-          💻 GitHub
-        </button>
-        <div style="height:10px"></div>
-        <button class="btn wide" type="button" data-url="https://www.wikipedia.org">
-          📚 Wikipedia
-        </button>
-      </article>
-
-      <article class="card">
-        <div class="cardhead">
-          <div class="cardicon">⚙</div>
-          <div>
-            <h2>Browser Settings</h2>
-            <p>Check your browser capabilities.</p>
-          </div>
-        </div>
-        <div class="result" id="browserInfo">Checking browser...</div>
-        <div style="height:12px"></div>
-        <button class="btn wide" id="testBackend" type="button">
-          Test AI Backend
-        </button>
-        <div style="height:10px"></div>
-        <div class="result" id="backendStatus" aria-live="polite">
-          Backend status has not been checked.
+      <article class="card companion">
+        <div class="bot" aria-hidden="true">🤖</div>
+        <h2>Your AI Companion</h2>
+        <p>Smarter. Faster. Easier.</p>
+        <div class="features">
+          <div class="feature"><span>☏</span>Chat</div>
+          <div class="feature"><span>✦</span>Create</div>
+          <div class="feature"><span>◈</span>Explore</div>
         </div>
       </article>
     </section>
   </main>
-
-  <footer class="footer">
-    NOVA AI Browser · AI chat · Web search · Voice · Camera/Screen · File analysis · Translation
-    <br><br>
-    AI answers are generated by the connected AI service. Verify important information.
-  </footer>
+  <div class="bottom-wave" aria-hidden="true"></div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
-    "use strict";
-
-    // Your Cloudflare Worker URL. Never put your Gemini API key here.
-    const API_URL =
-      "https://withered-surf-afdbnova-ai-backend.maheshmas37.workers.dev/";
-
-    const $ = (id) => document.getElementById(id);
-
-    let activeAbortController = null;
-    async function askAI(message, imageData = null, useSearch = false, history = [], attachment = null) {
-      const payload = { message, useSearch, history: Array.isArray(history) ? history.slice(-16) : [] };
-      if (imageData) payload.imageData = imageData;
-      if (attachment) payload.attachment = attachment;
-      activeAbortController = new AbortController();
-      const response = await fetch(API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload),
-        signal: activeAbortController.signal
-      });
-      let data;
-      try { data = await response.json(); }
-      catch { throw new Error("The backend returned an invalid response."); }
-      if (!response.ok) throw new Error(data.details || data.error || ("HTTP error " + response.status));
-      if (!data.answer) throw new Error("The AI returned an empty answer.");
-      let answer = data.answer;
-      if (Array.isArray(data.sources) && data.sources.length) {
-        answer += "\\n\\nSources:\\n" + data.sources.slice(0, 6)
-          .map((source, index) => (index + 1) + ". " + source.title + " — " + source.url).join("\\n");
-      }
-      return answer;
+    const destinations = {
+      chatgpt: "https://chatgpt.com/",
+      gemini: "https://gemini.google.com/",
+      lens: "https://lens.google.com/",
+      gmail: "https://mail.google.com/",
+      images: "https://images.google.com/",
+      apps: "https://www.google.com/intl/en/about/products"
+    };
+    const toast = document.getElementById("toast");
+    let toastTimer;
+    function notify(message) {
+      toast.textContent = message;
+      toast.classList.add("show");
+      clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => toast.classList.remove("show"), 3200);
     }
-
-    // Web search
-    $("searchForm").addEventListener("submit", (event) => {
-      event.preventDefault();
-      const query = $("searchInput").value.trim();
-      if (!query) return;
-
-      window.open(
-        "https://www.google.com/search?q=" + encodeURIComponent(query),
-        "_blank",
-        "noopener,noreferrer"
-      );
-    });
-
-    document.querySelectorAll("[data-query]").forEach((button) => {
-      button.addEventListener("click", () => {
-        $("searchInput").value = button.dataset.query;
-        $("searchForm").requestSubmit();
-      });
-    });
-
-    document.querySelectorAll("[data-url]").forEach((button) => {
-      button.addEventListener("click", () => {
-        window.open(button.dataset.url, "_blank", "noopener,noreferrer");
-      });
-    });
-
-    // AI Live Search uses Google Search grounding through the configured Worker.
-    $("aiSearchButton").addEventListener("click", async () => {
-      const query = $("searchInput").value.trim();
+    function openDestination(url) {
+      window.open(url, "_blank", "noopener,noreferrer");
+    }
+    function runSearch(value) {
+      const query = value.trim();
       if (!query) {
-        $("searchInput").focus();
-        $("voiceStatus").textContent = "Type a question first, then press AI Live Search.";
+        document.getElementById("searchInput").focus();
         return;
       }
-      const language = $("language") ? $("language").value : "Telugu";
-      addMessage("user", "Live web search: " + query);
-      const history = getHistoryForRequest();
-      const reply = addMessage("assistant", "Searching the web and preparing an answer...");
-      $("aiSearchButton").disabled = true;
-      try {
-        setMessageContent(reply, await askAI(
-          "Search the web for current information about this query. Summarize the most useful findings in " +
-          language + ". Clearly distinguish confirmed facts from uncertainty. Query: " + query,
-          null, true, history
-        ));
-        lastAIReply = reply.textContent;
-        if (voiceReplyEnabled) speakReply(lastAIReply);
-      } catch (error) {
-        setMessageContent(reply, "AI Live Search failed: " + error.message +
-          "\n\nCheck that the updated Cloudflare Worker is deployed and Google Search grounding is supported.");
-      } finally {
-        $("aiSearchButton").disabled = false;
-      }
+      const looksLikeUrl = /^(https?:\/\/)/i.test(query) ||
+        (/^[\w-]+\.[a-z]{2,}([/:?#].*)?$/i.test(query) && !query.includes(" "));
+      openDestination(looksLikeUrl
+        ? (query.startsWith("http") ? query : "https://" + query)
+        : "https://www.google.com/search?q=" + encodeURIComponent(query));
+    }
+    document.getElementById("searchForm").addEventListener("submit", event => {
+      event.preventDefault();
+      runSearch(document.getElementById("searchInput").value);
     });
-
-    // Voice search (browser support varies)
-    $("voiceButton").addEventListener("click", () => {
-      const SpeechRecognition =
-        window.SpeechRecognition || window.webkitSpeechRecognition;
-
-      if (!SpeechRecognition) {
-        $("voiceStatus").textContent =
-          "Voice search is not supported in this browser. Try Google Chrome.";
-        return;
-      }
-
-      const recognition = new SpeechRecognition();
-      recognition.lang = "en-IN";
-      recognition.interimResults = false;
-      recognition.maxAlternatives = 1;
-
-      $("voiceStatus").textContent = "Listening... Speak now.";
-
-      recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        $("searchInput").value = transcript;
-        $("voiceStatus").textContent = "Voice captured: " + transcript;
-      };
-
-      recognition.onerror = (event) => {
-        $("voiceStatus").textContent =
-          "Voice search error: " + event.error +
-          ". Check microphone permission.";
-      };
-
-      recognition.onend = () => {
-        if ($("voiceStatus").textContent === "Listening... Speak now.") {
-          $("voiceStatus").textContent = "Voice search ended.";
-        }
-      };
-
-      recognition.start();
+    document.getElementById("addressForm").addEventListener("submit", event => {
+      event.preventDefault();
+      runSearch(document.getElementById("addressInput").value);
     });
-
-    // AI voice reply using the browser's built-in Text-to-Speech.
-    let lastAIReply = "";
-    let voiceReplyEnabled = true;
-    let speechRetryUsed = false;
-
-    // Hands-free conversational mode. SpeechRecognition is browser-based; AI answers
-    // still come from the existing Cloudflare Worker, and replies use browser TTS.
-    const SpeechRecognitionAPI =
-      window.SpeechRecognition || window.webkitSpeechRecognition;
-    let liveRecognition = null;
-    let liveVoiceActive = false;
-    let liveTurnInProgress = false;
-    let liveRestartTimer = null;
-
-    function updateLiveVoiceStatus(message) {
-      $("voiceReplyStatus").textContent = message;
-    }
-
-    function startLiveRecognition() {
-      if (!liveVoiceActive || liveTurnInProgress || !liveRecognition) return;
-      try {
-        liveRecognition.lang = getSpeechLocale();
-        liveRecognition.start();
-        updateLiveVoiceStatus("Listening... Speak now. (" + liveRecognition.lang + ")");
-      } catch (error) {
-        // Calling start while the browser is already starting can throw InvalidStateError.
-      }
-    }
-
-    function restartLiveRecognitionSoon() {
-      if (!liveVoiceActive || liveTurnInProgress) return;
-      if (liveRestartTimer) window.clearTimeout(liveRestartTimer);
-      liveRestartTimer = window.setTimeout(startLiveRecognition, 450);
-    }
-
-    function startLiveVoice() {
-      if (!SpeechRecognitionAPI) {
-        updateLiveVoiceStatus("Live Voice is not supported in this browser. Please use the latest Google Chrome.");
-        return;
-      }
-      if (liveVoiceActive) {
-        updateLiveVoiceStatus("Live Voice is already active. Speak your question.");
-        return;
-      }
-
-      liveRecognition = new SpeechRecognitionAPI();
-      liveRecognition.continuous = true;
-      liveRecognition.interimResults = false;
-      liveRecognition.maxAlternatives = 1;
-      liveRecognition.lang = getSpeechLocale();
-
-      liveRecognition.onresult = (event) => {
-        let heard = "";
-        for (let i = event.resultIndex; i < event.results.length; i++) {
-          if (event.results[i].isFinal) heard += event.results[i][0].transcript + " ";
-        }
-        heard = heard.trim();
-        if (!heard || !liveVoiceActive || liveTurnInProgress) return;
-
-        // Pause listening while NOVA processes the question and speaks, so the mic
-        // does not capture NOVA's own voice as a new user question.
-        liveTurnInProgress = true;
-        try { liveRecognition.stop(); } catch (error) {}
-        $("chatInput").value = heard;
-        $("chatForm").requestSubmit();
-      };
-
-      liveRecognition.onerror = (event) => {
-        const error = event && event.error ? event.error : "unknown";
-        if (error === "not-allowed" || error === "service-not-allowed") {
-          liveVoiceActive = false;
-          updateLiveVoiceStatus("Microphone permission was blocked. Allow microphone access in Chrome site settings, then start again.");
-          return;
-        }
-        if (error === "no-speech" || error === "aborted") return;
-        updateLiveVoiceStatus("Live Voice microphone error: " + error + ". Check microphone permission and try again.");
-      };
-
-      liveRecognition.onend = () => {
-        if (liveVoiceActive && !liveTurnInProgress) restartLiveRecognitionSoon();
-      };
-
-      liveVoiceActive = true;
-      $("liveVoiceButton").disabled = true;
-      $("stopLiveVoiceButton").disabled = false;
-      updateLiveVoiceStatus("Starting microphone... Please allow access and speak.");
-      startLiveRecognition();
-    }
-
-    function stopLiveVoice() {
-      liveVoiceActive = false;
-      liveTurnInProgress = false;
-      if (liveRestartTimer) window.clearTimeout(liveRestartTimer);
-      if (liveRecognition) {
-        liveRecognition.onend = null;
-        try { liveRecognition.stop(); } catch (error) {}
-        liveRecognition = null;
-      }
-      if ("speechSynthesis" in window) window.speechSynthesis.cancel();
-      $("liveVoiceButton").disabled = false;
-      $("stopLiveVoiceButton").disabled = false;
-      updateLiveVoiceStatus("Live Voice stopped. Press Start Live Voice to talk again.");
-    }
-
-    $("liveVoiceButton").addEventListener("click", startLiveVoice);
-    $("stopLiveVoiceButton").addEventListener("click", stopLiveVoice);
-    $("stopLiveVoiceButton").disabled = false;
-
-    function getSpeechLocale() {
-      const language = $("language").value;
-      const locales = {
-        English: "en-IN",
-        Telugu: "te-IN",
-        Hindi: "hi-IN",
-        Kannada: "kn-IN",
-        Tamil: "ta-IN",
-        Malayalam: "ml-IN",
-        Bengali: "bn-IN",
-        Marathi: "mr-IN",
-        Spanish: "es-ES",
-        French: "fr-FR",
-        Arabic: "ar-SA"
-      };
-      return locales[language] || "en-IN";
-    }
-
-    function speakReply(text, retryWithoutVoice = false) {
-      const status = $("voiceReplyStatus");
-      const cleanText = String(text || "").trim();
-
-      if (!cleanText) {
-        status.textContent = "There is no AI reply to play yet.";
-        return;
-      }
-      if (!("speechSynthesis" in window) ||
-          typeof SpeechSynthesisUtterance === "undefined") {
-        status.textContent =
-          "Voice output is not supported here. Please open NOVA AI in the latest Google Chrome.";
-        return;
-      }
-
-      const synth = window.speechSynthesis;
-      try {
-        synth.cancel();
-        // Resetting the queue before speaking helps Chromium recover from a stuck speech queue.
-        const utterance = new SpeechSynthesisUtterance(cleanText);
-        utterance.lang = getSpeechLocale();
-        utterance.rate = 0.95;
-        utterance.pitch = 1;
-
-        const voices = synth.getVoices();
-        const localePrefix = utterance.lang.toLowerCase().split("-")[0];
-        const matchingVoice = voices.find((voice) =>
-          voice.lang && voice.lang.toLowerCase().split("-")[0] === localePrefix
-        ) || voices.find((voice) =>
-          voice.lang && voice.lang.toLowerCase().startsWith(localePrefix)
-        );
-
-        // If the selected language voice is causing a failure, retry once with Chrome's default voice.
-        if (matchingVoice && !retryWithoutVoice) {
-          utterance.voice = matchingVoice;
-        }
-
-        utterance.onstart = () => {
-          status.textContent = "Speaking reply (" + utterance.lang + ")...";
-        };
-        utterance.onend = () => {
-          status.textContent = liveVoiceActive
-            ? "NOVA finished speaking. Listening again..."
-            : "Voice reply finished. You can replay it with Speak Last Reply.";
-          if (liveVoiceActive) {
-            liveTurnInProgress = false;
-            restartLiveRecognitionSoon();
-          }
-        };
-        utterance.onerror = (event) => {
-          const errorName = event && event.error ? event.error : "unknown";
-          if (matchingVoice && !retryWithoutVoice &&
-              !["canceled", "interrupted"].includes(errorName)) {
-            status.textContent =
-              "Selected language voice failed; trying Chrome's default voice...";
-            speakReply(cleanText, true);
+    document.querySelectorAll("[data-action]").forEach(button => {
+      button.addEventListener("click", () => {
+        const action = button.dataset.action;
+        if (destinations[action]) {
+          openDestination(destinations[action]);
+        } else if (action === "models") {
+          notify("AI Models: choose ChatGPT or Gemini below to open the service.");
+          document.querySelector(".cards").scrollIntoView({ behavior: "smooth", block: "start" });
+        } else if (action === "voice") {
+          const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+          if (!SpeechRecognition) {
+            notify("Voice search isn't supported in this browser. Try Chrome or type your search.");
             return;
           }
-          status.textContent =
-            "Voice playback failed (" + errorName + "). Check Windows sound and Chrome's installed voices for " +
-            utterance.lang + ".";
-          if (liveVoiceActive) {
-            liveTurnInProgress = false;
-            restartLiveRecognitionSoon();
-          }
-        };
-
-        status.textContent = "Preparing voice reply...";
-        // Give cancel() a moment to clear any previous utterance from the queue.
-        window.setTimeout(() => {
-          try {
-            synth.speak(utterance);
-            // Some browser/OS combinations leave the queue paused.
-            if (synth.paused) synth.resume();
-          } catch (error) {
-            status.textContent =
-              "Could not start voice playback. Refresh the page and try Speak Last Reply.";
-          }
-        }, 120);
-      } catch (error) {
-        status.textContent =
-          "Voice playback could not start. Refresh the page and try Speak Last Reply.";
-      }
-    }
-
-    // Load voice metadata when Chrome makes its installed voices available.
-    if ("speechSynthesis" in window) {
-      window.speechSynthesis.onvoiceschanged = () => {
-        // Voice list is refreshed by the browser; speechReply reads it when called.
-      };
-    }
-
-    $("speakAgainButton").addEventListener("click", () => {
-      if (lastAIReply) {
-        speakReply(lastAIReply);
-      } else {
-        $("voiceReplyStatus").textContent = "There is no AI reply to play yet.";
-      }
-    });
-
-    $("stopSpeechButton").addEventListener("click", () => {
-      if ("speechSynthesis" in window) window.speechSynthesis.cancel();
-      $("voiceReplyStatus").textContent = "Voice playback stopped.";
-    });
-
-    // Camera and screen sharing preview. A single still frame is sent only when
-    // the user explicitly presses "Ask NOVA About This View".
-    let mediaStream = null;
-    const mediaPreview = $("mediaPreview");
-    const mediaStatus = $("mediaStatus");
-
-    async function stopMediaSharing(updateStatus = true) {
-      if (mediaStream) {
-        mediaStream.getTracks().forEach((track) => track.stop());
-        mediaStream = null;
-      }
-      mediaPreview.srcObject = null;
-      if (updateStatus) mediaStatus.textContent = "Camera/screen sharing stopped.";
-    }
-
-    async function startMediaStream(stream, label) {
-      await stopMediaSharing(false);
-      mediaStream = stream;
-      mediaPreview.srcObject = stream;
-      mediaStatus.textContent = label + " is active. To end it, press Stop Sharing or use Chrome's sharing indicator.";
-      stream.getVideoTracks().forEach((track) => {
-        track.addEventListener("ended", () => {
-          if (mediaStream === stream) {
-            stopMediaSharing(false);
-            mediaStatus.textContent = label + " ended.";
-          }
-        }, { once: true });
-      });
-    }
-
-    $("startCameraButton").addEventListener("click", async () => {
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-        mediaStatus.textContent = "Camera access is unavailable. Open this site in Chrome over HTTPS and check camera permissions.";
-        return;
-      }
-      try {
-        mediaStatus.textContent = "Requesting camera permission...";
-        const stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: "user" },
-          audio: false
-        });
-        await startMediaStream(stream, "Camera preview");
-      } catch (error) {
-        mediaStatus.textContent = "Camera could not start: " + (error.message || error.name) + ". Allow camera access in Chrome site settings.";
-      }
-    });
-
-    $("shareScreenButton").addEventListener("click", async () => {
-      if (!navigator.mediaDevices || !navigator.mediaDevices.getDisplayMedia) {
-        mediaStatus.textContent = "Screen sharing is unavailable in this browser. Use the latest Chrome on HTTPS.";
-        return;
-      }
-      try {
-        mediaStatus.textContent = "Choose a screen, window, or browser tab in the sharing dialog...";
-        const stream = await navigator.mediaDevices.getDisplayMedia({
-          video: true,
-          audio: false
-        });
-        await startMediaStream(stream, "Screen sharing preview");
-      } catch (error) {
-        mediaStatus.textContent = error.name === "NotAllowedError"
-          ? "Screen sharing was cancelled or permission was denied. Press Share Screen and choose a source."
-          : "Screen sharing could not start: " + (error.message || error.name);
-      }
-    });
-
-    $("stopMediaButton").addEventListener("click", () => stopMediaSharing(true));
-
-    $("analyzeFrameButton").addEventListener("click", async () => {
-      if (!mediaStream || !mediaPreview.srcObject || !mediaPreview.videoWidth) {
-        mediaStatus.textContent = "Start the camera or share your screen first, then try again.";
-        return;
-      }
-      const button = $("analyzeFrameButton");
-      button.disabled = true;
-      mediaStatus.textContent = "Capturing one frame and sending it to NOVA AI...";
-      try {
-        const canvas = document.createElement("canvas");
-        canvas.width = mediaPreview.videoWidth;
-        canvas.height = mediaPreview.videoHeight;
-        const context = canvas.getContext("2d");
-        context.drawImage(mediaPreview, 0, 0, canvas.width, canvas.height);
-        // JPEG is smaller and works with Gemini inline image input.
-        const imageData = canvas.toDataURL("image/jpeg", 0.82);
-        const question = "Analyze this single image frame from the user's camera or shared screen. Describe what is visible and answer helpfully. If it is a screen, read visible text where possible. Do not claim to see anything outside this frame.";
-        addMessage("user", "Please analyze my current camera/screen view.");
-        const history = getHistoryForRequest();
-        const reply = addMessage("assistant", "NOVA is analyzing the frame...");
-        const language = $("language").value;
-        setMessageContent(reply, await askAI("Answer in " + language + ". " + question, imageData, false, history));
-        lastAIReply = reply.textContent;
-        if (voiceReplyEnabled) speakReply(lastAIReply);
-        mediaStatus.textContent = "Frame analyzed. For privacy, NOVA received only this captured still image, not a continuous video stream.";
-      } catch (error) {
-        mediaStatus.textContent = "Frame analysis failed: " + (error.message || error) +
-          ". Make sure the updated Cloudflare Worker is deployed.";
-      } finally {
-        button.disabled = false;
-      }
-    });
-
-    window.addEventListener("pagehide", () => {
-      if (mediaStream) mediaStream.getTracks().forEach((track) => track.stop());
-    });
-
-    // Local conversation history. Text is saved in this browser; attachments are not saved.
-    const THREADS_KEY = "nova_ai_threads_v2";
-    let savedThreads = [];
-    try { savedThreads = JSON.parse(localStorage.getItem(THREADS_KEY) || "[]"); } catch { savedThreads = []; }
-    let activeThreadId = null;
-    let conversationMessages = [];
-    let lastUserQuestion = "";
-    let lastUserAttachment = null;
-    let pendingAttachment = null;
-    let pendingTextFileContent = "";
-    let requestInProgress = false;
-
-    function saveCurrentThread() {
-      if (!activeThreadId) activeThreadId = "thread-" + Date.now();
-      let thread = savedThreads.find(item => item.id === activeThreadId);
-      if (!thread) {
-        thread = { id: activeThreadId, title: "New conversation", updatedAt: Date.now(), messages: [] };
-        savedThreads.unshift(thread);
-      }
-      thread.messages = conversationMessages.slice(-100).map(m => ({ role: m.role, content: m.content }));
-      thread.updatedAt = Date.now();
-      const firstUser = thread.messages.find(m => m.role === "user");
-      if (firstUser) thread.title = firstUser.content.slice(0, 48) || "Conversation";
-      savedThreads = savedThreads.filter((item, index, arr) => arr.findIndex(x => x.id === item.id) === index)
-        .sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 30);
-      try { localStorage.setItem(THREADS_KEY, JSON.stringify(savedThreads)); } catch {}
-      refreshThreadSelect();
-    }
-
-    function refreshThreadSelect() {
-      const select = $("chatHistorySelect");
-      if (!select) return;
-      const current = activeThreadId || "";
-      select.innerHTML = '<option value="">Current conversation</option>';
-      savedThreads.forEach(thread => {
-        const option = document.createElement("option");
-        option.value = thread.id;
-        option.textContent = thread.title || "Conversation";
-        select.appendChild(option);
-      });
-      select.value = savedThreads.some(t => t.id === current) ? current : "";
-    }
-
-    function renderConversation() {
-      const log = $("chatLog");
-      log.innerHTML = "";
-      if (!conversationMessages.length) {
-        const welcome = document.createElement("div");
-        welcome.className = "message assistant";
-        welcome.textContent = "నమస్కారం! నేను NOVA AI. మీ ప్రశ్న అడగండి.\nHello! I am NOVA AI. Ask me anything.";
-        log.appendChild(welcome);
-      } else {
-        conversationMessages.forEach(item => {
-          const node = document.createElement("div");
-          node.className = "message " + (item.role === "user" ? "user" : "assistant");
-          node.textContent = item.content;
-          log.appendChild(node);
-        });
-      }
-      log.scrollTop = log.scrollHeight;
-    }
-
-    function loadThread(threadId) {
-      const thread = savedThreads.find(item => item.id === threadId);
-      if (!thread) return;
-      activeThreadId = thread.id;
-      conversationMessages = (thread.messages || []).map(m => ({ role: m.role, content: m.content }));
-      lastAIReply = [...conversationMessages].reverse().find(m => m.role === "assistant")?.content || "";
-      lastUserQuestion = [...conversationMessages].reverse().find(m => m.role === "user")?.content || "";
-      pendingAttachment = null;
-      pendingTextFileContent = "";
-      $("fileInput").value = "";
-      $("fileStatus").textContent = "Attachments are not saved with chat history. Attach the file again if needed.";
-      renderConversation();
-      refreshThreadSelect();
-    }
-
-    function addMessage(type, content) {
-      const message = document.createElement("div");
-      message.className = "message " + type;
-      message.textContent = content;
-      $("chatLog").appendChild(message);
-      $("chatLog").scrollTop = $("chatLog").scrollHeight;
-      if (type === "user" || type === "assistant") {
-        conversationMessages.push({ role: type === "user" ? "user" : "assistant", content: String(content || "") });
-        message.dataset.messageIndex = String(conversationMessages.length - 1);
-        saveCurrentThread();
-      }
-      return message;
-    }
-
-    function setMessageContent(node, content) {
-      node.textContent = String(content || "");
-      const index = Number(node.dataset.messageIndex);
-      if (Number.isInteger(index) && index >= 0 && conversationMessages[index]) {
-        conversationMessages[index].content = node.textContent;
-        saveCurrentThread();
-      }
-      $("chatLog").scrollTop = $("chatLog").scrollHeight;
-    }
-
-    function getHistoryForRequest() {
-      return conversationMessages.slice(0, -1).slice(-16).map(item => ({
-        role: item.role === "assistant" ? "model" : "user",
-        content: item.content
-      }));
-    }
-
-    function beginNewChat() {
-      if (requestInProgress && activeAbortController) activeAbortController.abort();
-      activeThreadId = "thread-" + Date.now();
-      conversationMessages = [];
-      lastAIReply = "";
-      lastUserQuestion = "";
-      lastUserAttachment = null;
-      pendingAttachment = null;
-      pendingTextFileContent = "";
-      $("fileInput").value = "";
-      $("fileStatus").textContent = "Attach images, PDFs, or text/code files (up to 5 MB each).";
-      renderConversation();
-      saveCurrentThread();
-      refreshThreadSelect();
-    }
-
-    $("newChatButton").addEventListener("click", beginNewChat);
-    $("chatHistorySelect").addEventListener("change", event => {
-      if (event.target.value) loadThread(event.target.value);
-    });
-    $("copyLastButton").addEventListener("click", async () => {
-      if (!lastAIReply) { $("voiceReplyStatus").textContent = "There is no AI reply to copy yet."; return; }
-      try { await navigator.clipboard.writeText(lastAIReply); $("copyLastButton").textContent = "Copied!"; }
-      catch { $("voiceReplyStatus").textContent = "Clipboard permission is unavailable. Select and copy the reply manually."; }
-      setTimeout(() => { $("copyLastButton").textContent = "⧉ Copy Last Reply"; }, 1500);
-    });
-    $("stopResponseButton").addEventListener("click", () => {
-      if (activeAbortController) activeAbortController.abort();
-      $("voiceReplyStatus").textContent = "Stop requested. Any active response should cancel.";
-    });
-    $("regenerateButton").addEventListener("click", () => {
-      if (!lastUserQuestion) { $("voiceReplyStatus").textContent = "Ask a question first, then regenerate."; return; }
-      $("chatInput").value = lastUserQuestion;
-      if (lastUserAttachment) pendingAttachment = lastUserAttachment;
-      $("chatForm").requestSubmit();
-    });
-
-    const TEXT_FILE_TYPES = new Set(["text/plain", "text/markdown", "text/csv", "application/json", "text/html", "text/css", "text/javascript", "application/javascript", ""]);
-    $("fileInput").addEventListener("change", async () => {
-      pendingAttachment = null;
-      pendingTextFileContent = "";
-      const files = Array.from($("fileInput").files || []);
-      if (!files.length) { $("fileStatus").textContent = "No attachment selected."; return; }
-      if (files.length > 1) {
-        $("fileStatus").textContent = "Please attach one file at a time for this version.";
-        $("fileInput").value = "";
-        return;
-      }
-      const file = files[0];
-      if (file.size > 5 * 1024 * 1024) {
-        $("fileStatus").textContent = "File is larger than 5 MB. Choose a smaller file.";
-        $("fileInput").value = "";
-        return;
-      }
-      try {
-        if (file.type.startsWith("text/") || TEXT_FILE_TYPES.has(file.type) || /\.(txt|md|csv|json|html|css|js|py)$/i.test(file.name)) {
-          pendingTextFileContent = await file.text();
-          $("fileStatus").textContent = "Attached text/code file: " + file.name + ". Its contents will be included with your next question.";
-        } else if (file.type.startsWith("image/") || file.type === "application/pdf" || /\.pdf$/i.test(file.name)) {
-          const dataUrl = await new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = () => reject(new Error("Could not read the file."));
-            reader.readAsDataURL(file);
-          });
-          const match = String(dataUrl).match(/^data:([^;]+);base64,(.+)$/);
-          if (!match) throw new Error("Unsupported file encoding.");
-          pendingAttachment = { mimeType: match[1], data: match[2], name: file.name };
-          $("fileStatus").textContent = "Attached: " + file.name + ". Ask a question about this file, then press Send.";
-        } else {
-          throw new Error("Unsupported file type. Choose an image, PDF, or text/code file.");
+          const recognition = new SpeechRecognition();
+          recognition.lang = "en-IN";
+          recognition.onstart = () => notify("Listening… speak your search.");
+          recognition.onresult = event => {
+            const phrase = event.results[0][0].transcript;
+            document.getElementById("searchInput").value = phrase;
+            runSearch(phrase);
+          };
+          recognition.onerror = () => notify("Voice search could not start. Check microphone permission.");
+          recognition.start();
+        } else if (action === "screen") {
+          notify("Screen sharing needs a connected AI service. Open ChatGPT or Gemini and use its supported sharing controls.");
+          openDestination(destinations.chatgpt);
         }
-      } catch (error) {
-        pendingAttachment = null;
-        pendingTextFileContent = "";
-        $("fileStatus").textContent = error.message || String(error);
-        $("fileInput").value = "";
-      }
+      });
     });
-
-    $("chatForm").addEventListener("submit", async (event) => {
-      event.preventDefault();
-      if (requestInProgress) return;
-      const input = $("chatInput");
-      let question = input.value.trim();
-      if (!question && !pendingAttachment && !pendingTextFileContent) return;
-      if (!question) question = "Please analyze the attached file and explain its contents.";
-      if (pendingTextFileContent) {
-        question += "\n\nAttached file contents (" + ($("fileInput").files[0]?.name || "file") + "):\n" + pendingTextFileContent.slice(0, 40000);
-      }
-
-      const language = $("language").value;
-      const attachmentForRequest = pendingAttachment ? { ...pendingAttachment } : null;
-      lastUserQuestion = question;
-      lastUserAttachment = attachmentForRequest;
-      if (liveVoiceActive) liveTurnInProgress = true;
-      addMessage("user", input.value.trim() || ("Attached file: " + (attachmentForRequest?.name || "text file")));
-      input.value = "";
-      const history = getHistoryForRequest();
-      const reply = addMessage("assistant", "NOVA AI is thinking...");
-      requestInProgress = true;
-      $("sendButton").disabled = true;
-      $("regenerateButton").disabled = true;
-      try {
-        const answer = await askAI(
-          "You are NOVA AI, a helpful multilingual assistant. Answer in " + language +
-          ". Be accurate, clear, and honest about uncertainty. For coding questions, provide usable code and explain where it belongs. User question: " + question,
-          null, false, history, attachmentForRequest
-        );
-        setMessageContent(reply, answer);
-        lastAIReply = answer;
-        if (voiceReplyEnabled) speakReply(lastAIReply);
-      } catch (error) {
-        const msg = error.name === "AbortError" ? "Response stopped." :
-          "Could not connect to NOVA AI: " + error.message +
-          "\n\nCheck that the Cloudflare Worker is deployed and the Gemini API secret is configured.";
-        setMessageContent(reply, msg);
-        if (liveVoiceActive) {
-          liveTurnInProgress = false;
-          updateLiveVoiceStatus("AI request ended. Listening again...");
-          restartLiveRecognitionSoon();
-        }
-      } finally {
-        requestInProgress = false;
-        activeAbortController = null;
-        $("sendButton").disabled = false;
-        $("regenerateButton").disabled = false;
-        pendingAttachment = null;
-        pendingTextFileContent = "";
-        $("fileInput").value = "";
-        $("fileStatus").textContent = "Attach images, PDFs, or text/code files (up to 5 MB each).";
-        $("chatLog").scrollTop = $("chatLog").scrollHeight;
-        if (!liveVoiceActive) input.focus();
-      }
-    });
-
-    if (savedThreads.length) {
-      savedThreads.sort((a, b) => b.updatedAt - a.updatedAt);
-      loadThread(savedThreads[0].id);
-    } else {
-      beginNewChat();
-    }
-
-    // AI Translator
-    $("translateButton").addEventListener("click", async () => {
-      const text = $("translateInput").value.trim();
-      const target = $("targetLanguage").value;
-      const button = $("translateButton");
-
-      if (!text) {
-        $("translateResult").textContent = "Please enter text to translate.";
-        return;
-      }
-
-      button.disabled = true;
-      $("translateResult").textContent = "Translating...";
-
-      try {
-        const result = await askAI(
-          "Translate the following text into " + target +
-          ". Return only the translation, without explanations:\n\n" + text
-        );
-        $("translateResult").textContent = result;
-      } catch (error) {
-        $("translateResult").textContent =
-          "Translation failed: " + error.message;
-      } finally {
-        button.disabled = false;
-      }
-    });
-
-    $("copyTranslation").addEventListener("click", async () => {
-      const result = $("translateResult").textContent;
-
-      try {
-        await navigator.clipboard.writeText(result);
-        $("copyTranslation").textContent = "Copied!";
-        setTimeout(() => {
-          $("copyTranslation").textContent = "Copy Translation";
-        }, 1500);
-      } catch {
-        $("translateResult").textContent +=
-          "\n\nCopy is unavailable. Please select and copy the text manually.";
-      }
-    });
-
-    // Backend connection test
-    $("testBackend").addEventListener("click", async () => {
-      const button = $("testBackend");
-      const status = $("backendStatus");
-
-      button.disabled = true;
-      status.textContent = "Testing AI connection...";
-
-      try {
-        const answer = await askAI(
-          "Reply with exactly: NOVA AI connection successful."
-        );
-        status.textContent = "Connected successfully.\n" + answer;
-      } catch (error) {
-        status.textContent = "Connection failed.\n" + error.message;
-      } finally {
-        button.disabled = false;
-      }
-    });
-
-    // Browser capability information
-    $("browserInfo").textContent =
-      "Browser: " + navigator.userAgent +
-      "\nVoice input: " +
-      ((window.SpeechRecognition || window.webkitSpeechRecognition)
-        ? "Supported" : "Not detected") +
-      "\nVoice output: " +
-      (("speechSynthesis" in window) ? "Supported" : "Not detected") +
-      "\nSecure connection: " +
-      (window.isSecureContext ? "Yes" : "No");
   </script>
 </body>
 </html>
