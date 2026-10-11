@@ -428,10 +428,12 @@
           </button>
         </form>
         <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+          <button class="btn primary" id="liveVoiceButton" type="button">🎙 Start Live Voice</button>
+          <button class="btn" id="stopLiveVoiceButton" type="button">⏹ Stop Live Voice</button>
           <button class="btn" id="speakAgainButton" type="button">🔊 Speak Last Reply</button>
           <button class="btn" id="stopSpeechButton" type="button">⏹ Stop Voice</button>
         </div>
-        <p id="voiceReplyStatus" aria-live="polite">Automatic voice reply is ON. Voice availability depends on your browser and installed voices.</p>
+        <p id="voiceReplyStatus" aria-live="polite">Live Voice is ready. Press Start Live Voice and allow microphone access. Automatic voice replies are enabled.</p>
         <p>AI responses require an active Cloudflare Worker and Gemini API secret.</p>
       </article>
 
@@ -635,6 +637,109 @@
     let voiceReplyEnabled = true;
     let speechRetryUsed = false;
 
+    // Hands-free conversational mode. SpeechRecognition is browser-based; AI answers
+    // still come from the existing Cloudflare Worker, and replies use browser TTS.
+    const SpeechRecognitionAPI =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+    let liveRecognition = null;
+    let liveVoiceActive = false;
+    let liveTurnInProgress = false;
+    let liveRestartTimer = null;
+
+    function updateLiveVoiceStatus(message) {
+      $("voiceReplyStatus").textContent = message;
+    }
+
+    function startLiveRecognition() {
+      if (!liveVoiceActive || liveTurnInProgress || !liveRecognition) return;
+      try {
+        liveRecognition.lang = getSpeechLocale();
+        liveRecognition.start();
+        updateLiveVoiceStatus("Listening... Speak now. (" + liveRecognition.lang + ")");
+      } catch (error) {
+        // Calling start while the browser is already starting can throw InvalidStateError.
+      }
+    }
+
+    function restartLiveRecognitionSoon() {
+      if (!liveVoiceActive || liveTurnInProgress) return;
+      if (liveRestartTimer) window.clearTimeout(liveRestartTimer);
+      liveRestartTimer = window.setTimeout(startLiveRecognition, 450);
+    }
+
+    function startLiveVoice() {
+      if (!SpeechRecognitionAPI) {
+        updateLiveVoiceStatus("Live Voice is not supported in this browser. Please use the latest Google Chrome.");
+        return;
+      }
+      if (liveVoiceActive) {
+        updateLiveVoiceStatus("Live Voice is already active. Speak your question.");
+        return;
+      }
+
+      liveRecognition = new SpeechRecognitionAPI();
+      liveRecognition.continuous = true;
+      liveRecognition.interimResults = false;
+      liveRecognition.maxAlternatives = 1;
+      liveRecognition.lang = getSpeechLocale();
+
+      liveRecognition.onresult = (event) => {
+        let heard = "";
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          if (event.results[i].isFinal) heard += event.results[i][0].transcript + " ";
+        }
+        heard = heard.trim();
+        if (!heard || !liveVoiceActive || liveTurnInProgress) return;
+
+        // Pause listening while NOVA processes the question and speaks, so the mic
+        // does not capture NOVA's own voice as a new user question.
+        liveTurnInProgress = true;
+        try { liveRecognition.stop(); } catch (error) {}
+        $("chatInput").value = heard;
+        $("chatForm").requestSubmit();
+      };
+
+      liveRecognition.onerror = (event) => {
+        const error = event && event.error ? event.error : "unknown";
+        if (error === "not-allowed" || error === "service-not-allowed") {
+          liveVoiceActive = false;
+          updateLiveVoiceStatus("Microphone permission was blocked. Allow microphone access in Chrome site settings, then start again.");
+          return;
+        }
+        if (error === "no-speech" || error === "aborted") return;
+        updateLiveVoiceStatus("Live Voice microphone error: " + error + ". Check microphone permission and try again.");
+      };
+
+      liveRecognition.onend = () => {
+        if (liveVoiceActive && !liveTurnInProgress) restartLiveRecognitionSoon();
+      };
+
+      liveVoiceActive = true;
+      $("liveVoiceButton").disabled = true;
+      $("stopLiveVoiceButton").disabled = false;
+      updateLiveVoiceStatus("Starting microphone... Please allow access and speak.");
+      startLiveRecognition();
+    }
+
+    function stopLiveVoice() {
+      liveVoiceActive = false;
+      liveTurnInProgress = false;
+      if (liveRestartTimer) window.clearTimeout(liveRestartTimer);
+      if (liveRecognition) {
+        liveRecognition.onend = null;
+        try { liveRecognition.stop(); } catch (error) {}
+        liveRecognition = null;
+      }
+      if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+      $("liveVoiceButton").disabled = false;
+      $("stopLiveVoiceButton").disabled = false;
+      updateLiveVoiceStatus("Live Voice stopped. Press Start Live Voice to talk again.");
+    }
+
+    $("liveVoiceButton").addEventListener("click", startLiveVoice);
+    $("stopLiveVoiceButton").addEventListener("click", stopLiveVoice);
+    $("stopLiveVoiceButton").disabled = false;
+
     function getSpeechLocale() {
       const language = $("language").value;
       const locales = {
@@ -694,8 +799,13 @@
           status.textContent = "Speaking reply (" + utterance.lang + ")...";
         };
         utterance.onend = () => {
-          status.textContent =
-            "Voice reply finished. You can replay it with Speak Last Reply.";
+          status.textContent = liveVoiceActive
+            ? "NOVA finished speaking. Listening again..."
+            : "Voice reply finished. You can replay it with Speak Last Reply.";
+          if (liveVoiceActive) {
+            liveTurnInProgress = false;
+            restartLiveRecognitionSoon();
+          }
         };
         utterance.onerror = (event) => {
           const errorName = event && event.error ? event.error : "unknown";
@@ -707,8 +817,12 @@
             return;
           }
           status.textContent =
-            "Voice playback failed (" + errorName + "). Try Speak Last Reply, check Windows sound, and install/enable a voice for " +
-            utterance.lang + " in your system speech settings.";
+            "Voice playback failed (" + errorName + "). Check Windows sound and Chrome's installed voices for " +
+            utterance.lang + ".";
+          if (liveVoiceActive) {
+            liveTurnInProgress = false;
+            restartLiveRecognitionSoon();
+          }
         };
 
         status.textContent = "Preparing voice reply...";
@@ -767,6 +881,7 @@
       if (!question) return;
 
       const language = $("language").value;
+      if (liveVoiceActive) liveTurnInProgress = true;
       addMessage("user", question);
       input.value = "";
 
@@ -784,10 +899,15 @@
         reply.textContent =
           "Could not connect to NOVA AI: " + error.message +
           "\n\nCheck that the Cloudflare Worker is deployed and the Gemini API secret is configured.";
+        if (liveVoiceActive) {
+          liveTurnInProgress = false;
+          updateLiveVoiceStatus("AI connection failed. Listening again... " + error.message);
+          restartLiveRecognitionSoon();
+        }
       } finally {
         $("sendButton").disabled = false;
         $("chatLog").scrollTop = $("chatLog").scrollHeight;
-        input.focus();
+        if (!liveVoiceActive) input.focus();
       }
     });
 
