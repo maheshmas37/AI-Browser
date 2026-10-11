@@ -1,347 +1,322 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="theme-color" content="#f8fbff" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#080d19">
   <title>NOVA AI Browser</title>
+  <meta name="description" content="NOVA AI Browser with AI chat and web search.">
   <style>
     :root {
-      --blue: #0b73ff;
-      --purple: #783cff;
-      --green: #08a878;
-      --orange: #ff8b18;
-      --red: #f04455;
-      --ink: #10264f;
-      --muted: #7385a8;
-      --line: #e7edf8;
+      color-scheme: dark;
+      --bg: #080d19;
+      --panel: #111a2b;
+      --line: #283750;
+      --text: #edf4ff;
+      --muted: #a0aec4;
+      --blue: #5794ff;
+      --purple: #9c7bff;
     }
     * { box-sizing: border-box; }
     body {
       margin: 0;
       min-height: 100vh;
-      color: var(--ink);
-      font-family: Inter, "Segoe UI", Arial, sans-serif;
-      background:
-        radial-gradient(ellipse at 50% 30%, rgba(222,239,255,.45), transparent 55%),
-        #fbfdff;
+      font-family: Inter, Arial, sans-serif;
+      background: radial-gradient(ellipse at top, #17284b 0%, var(--bg) 55%);
+      color: var(--text);
     }
-    button, input { font: inherit; }
+    button, input, textarea, select { font: inherit; }
     button { cursor: pointer; }
-    .browser-bar {
-      height: 58px;
+    header {
+      min-height: 72px;
       display: flex;
       align-items: center;
-      gap: 16px;
-      padding: 0 22px;
-      background: linear-gradient(100deg, #e9f5ff, #f7efff 55%, #fff1ed);
-      border-bottom: 1px solid #e6ebf4;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 5%;
+      border-bottom: 1px solid #26334b;
+      background: #080d19dd;
     }
-    .tab {
-      display: flex; align-items: center; gap: 9px;
-      padding: 10px 14px;
-      background: rgba(255,255,255,.86);
-      border-radius: 13px 13px 0 0;
-      font-size: 14px; color: #243653;
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .logo {
+      width: 42px; height: 42px; border-radius: 14px;
+      display: grid; place-items: center;
+      font-weight: 900; font-size: 20px;
+      background: linear-gradient(135deg, var(--blue), var(--purple));
+      color: white;
     }
-    .mini-logo {
-      width: 17px; height: 17px; border-radius: 6px;
-      background: conic-gradient(from 25deg, #ffb21a, #f34d87, #7a48ff, #08b9ec, #08b878, #ffb21a);
-      display: inline-block;
+    .brand h1 { margin: 0; font-size: 19px; }
+    .brand p { margin: 4px 0 0; color: var(--muted); font-size: 12px; }
+    .status { font-size: 12px; color: #78e6b0; }
+    main { width: min(920px, 94%); margin: 34px auto 0; }
+    .hero { text-align: center; padding: 18px 0 25px; }
+    .hero .tag {
+      color: #bba8ff; font-size: 12px; letter-spacing: 2px;
+      text-transform: uppercase;
     }
-    .tab-close { margin-left: 28px; color: #51627c; }
-    .plus { font-size: 23px; color: #233958; }
-    .window-controls { margin-left: auto; display: flex; gap: 24px; color: #243653; }
-    .toolbar {
-      min-height: 54px; display: flex; align-items: center; gap: 18px;
-      padding: 8px 24px; border-bottom: 1px solid #edf1f7;
-      background: rgba(255,255,255,.78);
+    .hero h2 { font-size: clamp(30px, 6vw, 49px); margin: 13px 0; }
+    .hero p { color: var(--muted); margin: 0; line-height: 1.7; }
+    .search-card, .chat-card {
+      background: #10192aee; border: 1px solid var(--line);
+      border-radius: 20px; padding: 18px; margin-bottom: 18px;
+      box-shadow: 0 18px 55px #0002;
     }
-    .nav-icon { font-size: 22px; color: #6c7d99; }
-    .address {
-      flex: 1; min-width: 0; display: flex; align-items: center; gap: 12px;
-      height: 40px; padding: 0 16px; border-radius: 24px;
-      background: #f2f6fc; color: #7a8aaa; border: 1px solid #edf1f7;
+    .section-title { font-size: 15px; margin: 0 0 12px; }
+    .search-row { display: flex; gap: 9px; }
+    input, textarea, select {
+      width: 100%; color: var(--text); background: #091221;
+      border: 1px solid #33445f; border-radius: 12px;
+      padding: 13px 14px; outline: none;
     }
-    .address input { border: 0; outline: 0; background: transparent; width: 100%; color: #334968; }
-    .top-links { display: flex; gap: 20px; align-items: center; white-space: nowrap; }
-    .top-links button { border: 0; background: transparent; color: #263852; display: flex; gap: 7px; align-items: center; }
-    .gmail-mark { color: #e94c45; font-size: 21px; font-weight: 800; }
-    .image-mark { font-size: 19px; }
-    .apps { width: 38px; height: 38px; border-radius: 50%; border: 0; background: #f0f4fb; color: #415575; font-size: 22px; }
-    main { max-width: 1450px; margin: 0 auto; padding: 22px 34px 70px; }
-    .brand { text-align: center; padding: 7px 0 24px; }
-    .brand-line { display: flex; align-items: center; justify-content: center; gap: 20px; }
-    .nova-symbol {
-      width: 70px; height: 70px; display: grid; place-items: center;
-      font-size: 57px; font-weight: 900; line-height: 1;
-      color: transparent; background: linear-gradient(135deg,#00c8e8 8%,#087bff 35%,#8a3fff 60%,#ff6ca8 82%);
-      -webkit-background-clip: text; background-clip: text;
-      transform: rotate(-4deg);
+    input:focus, textarea:focus, select:focus {
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px #5794ff20;
     }
-    .brand-name { margin: 0; font-size: clamp(48px, 6vw, 70px); font-weight: 850; letter-spacing: -3px; line-height: .95; }
-    .brand-name span:nth-child(1) { color: #149bfa; }
-    .brand-name span:nth-child(2) { color: #8547ef; }
-    .brand-name span:nth-child(3) { color: #ffb323; }
-    .brand-name span:nth-child(4) { color: #08bb7a; }
-    .brand-subtitle { margin-top: 9px; font-size: 28px; font-weight: 650; letter-spacing: -.5px; }
-    .tagline { margin: 20px 0 0; color: #8192b2; font-size: 17px; }
-    .tagline b { padding: 0 10px; font-size: 12px; }
-    .tagline b:nth-child(1) { color: #1596ff; }
-    .tagline b:nth-child(2) { color: #a34bff; }
-    .tagline b:nth-child(3) { color: #ff9a20; }
-    .tagline b:nth-child(4) { color: #08bb7a; }
-    .search-box {
-      max-width: 1000px; margin: 0 auto 44px; min-height: 78px;
-      display: flex; align-items: center; gap: 18px; padding: 0 27px;
-      border: 1.5px solid transparent; border-radius: 42px;
-      background: linear-gradient(#fff,#fff) padding-box, linear-gradient(100deg,#1682ff,#b44aff) border-box;
-      box-shadow: 0 13px 28px rgba(53,107,203,.12);
+    .primary, .secondary {
+      border: 0; border-radius: 12px; padding: 12px 17px;
+      color: white; font-weight: 700; white-space: nowrap;
     }
-    .google-g { font-size: 32px; font-weight: 850; color: #4285f4; letter-spacing: -3px; }
-    .search-box input { flex: 1; min-width: 0; border: 0; outline: 0; font-size: 19px; color: #344966; background: transparent; }
-    .search-box input::placeholder { color: #8799b9; }
-    .icon-button { border: 0; background: transparent; font-size: 25px; padding: 5px; }
-    .mic { color: #0c8bdc; }
-    .lens { color: #4385ff; }
-    .quick-actions { display: grid; grid-template-columns: repeat(5, minmax(0,1fr)); gap: 18px; margin-bottom: 40px; }
-    .quick {
-      min-height: 82px; border-radius: 27px; display: flex; justify-content: center; align-items: center; gap: 13px;
-      border: 1px solid var(--tint-border); background: var(--tint); color: var(--accent);
-      transition: transform .18s ease, box-shadow .18s ease;
+    .primary { background: linear-gradient(135deg, #347ff2, #7957e8); }
+    .secondary { background: #253650; }
+    .primary:disabled { opacity: .55; cursor: wait; }
+    .chat-top {
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px; flex-wrap: wrap; margin-bottom: 12px;
     }
-    .quick:hover, .open-button:hover { transform: translateY(-2px); box-shadow: 0 9px 20px rgba(44,91,160,.12); }
-    .quick-icon { width: 52px; height: 52px; display: grid; place-items: center; border-radius: 50%; background: var(--bubble); font-size: 26px; }
-    .quick strong { font-size: 16px; font-weight: 650; white-space: nowrap; }
-    .blue { --accent:#0868f5; --tint:#edf6ff; --tint-border:#d4eaff; --bubble:#d9edff; }
-    .purple { --accent:#6733e8; --tint:#f5efff; --tint-border:#e8dcff; --bubble:#e7d9ff; }
-    .green { --accent:#079d78; --tint:#eafaf6; --tint-border:#c9f0e5; --bubble:#cef6e9; }
-    .orange { --accent:#ee790c; --tint:#fff7e9; --tint-border:#ffebc9; --bubble:#ffedce; }
-    .red { --accent:#e83d50; --tint:#fff0f2; --tint-border:#ffdade; --bubble:#ffdde2; }
-    .cards { display: grid; grid-template-columns: 1.1fr 1.1fr .92fr .98fr; gap: 20px; }
-    .card {
-      min-width: 0; min-height: 310px; padding: 25px 25px 23px; border-radius: 17px;
-      border: 1px solid var(--tint-border); background: linear-gradient(145deg,var(--tint),#fff 125%);
-      display: flex; flex-direction: column;
+    .chat-top select { width: auto; min-width: 155px; padding: 10px; }
+    #messages {
+      min-height: 240px; max-height: 52vh; overflow-y: auto;
+      border: 1px solid #27364d; border-radius: 14px;
+      padding: 14px; background: #09111f; margin-bottom: 13px;
     }
-    .card-head { display: flex; align-items: center; gap: 17px; margin-bottom: 17px; }
-    .service-logo { flex: 0 0 62px; width: 62px; height: 62px; display: grid; place-items: center; border-radius: 50%; background: var(--bubble); font-size: 32px; font-weight: 750; }
-    .card h2 { margin: 0; font-size: 23px; letter-spacing: -.4px; }
-    .card p { margin: 0 0 18px; font-size: 14px; line-height: 1.65; color: #476083; }
-    .features { display: flex; justify-content: space-between; gap: 8px; margin: auto 0 20px; }
-    .feature { flex: 1; text-align: center; color: #3b5577; font-size: 12px; }
-    .feature span { width: 43px; height: 43px; margin: 0 auto 7px; display: grid; place-items: center; border-radius: 50%; background: rgba(255,255,255,.72); font-size: 20px; color: var(--accent); }
-    .open-button { border: 0; border-radius: 24px; padding: 13px 18px; color: white; background: var(--accent); font-weight: 650; transition: .18s; }
-    .companion { align-items: center; text-align: center; background: linear-gradient(145deg,#f1f4ff,#f7f1ff); border-color: #e0e5ff; }
-    .bot { width: 112px; height: 90px; margin: -2px auto 7px; display: grid; place-items: center; font-size: 61px; filter: drop-shadow(0 8px 8px rgba(67,103,208,.16)); }
-    .companion h2 { font-size: 21px; }
-    .companion p { margin-top: 8px; margin-bottom: 18px; }
-    .companion .features { width: 100%; }
-    .companion .feature span { color: #3276f5; background: #fff; }
-    .bottom-wave { position: fixed; z-index: -1; bottom: 0; left: 0; width: 100%; height: 80px; pointer-events: none; background: linear-gradient(100deg,rgba(0,191,239,.9),rgba(101,75,255,.78),rgba(255,174,98,.7),rgba(209,74,219,.78)); clip-path: polygon(0 35%,8% 73%,20% 65%,33% 100%,48% 77%,62% 84%,75% 38%,87% 65%,100% 35%,100% 100%,0 100%); opacity: .75; }
-    .toast { position: fixed; left: 50%; bottom: 26px; transform: translate(-50%, 20px); opacity: 0; pointer-events: none; background: #142849; color: #fff; padding: 12px 18px; border-radius: 12px; box-shadow: 0 8px 30px #10264f26; transition: .2s; z-index: 5; max-width: calc(100vw - 32px); text-align: center; }
-    .toast.show { opacity: 1; transform: translate(-50%, 0); }
-    @media (max-width: 1100px) {
-      .quick-actions { grid-template-columns: repeat(3,minmax(0,1fr)); }
-      .cards { grid-template-columns: repeat(2,minmax(0,1fr)); }
+    .welcome { color: var(--muted); text-align: center; padding: 48px 10px; line-height: 1.8; }
+    .message { margin: 10px 0 16px; }
+    .who { font-size: 12px; color: #a9bfff; margin-bottom: 6px; font-weight: 700; }
+    .bubble {
+      white-space: pre-wrap; overflow-wrap: anywhere; line-height: 1.65;
+      padding: 12px 14px; border-radius: 12px;
+      background: #17243a; border: 1px solid #2a3c58;
     }
-    @media (max-width: 650px) {
-      .browser-bar { padding: 0 10px; gap: 9px; }
-      .tab-close, .window-controls, .toolbar .nav-icon, .top-links button span { display: none; }
-      .toolbar { padding: 8px 12px; gap: 10px; }
-      .top-links { gap: 10px; }
-      .apps { width: 32px; height: 32px; }
-      main { padding: 28px 15px 65px; }
-      .brand-line { gap: 8px; }
-      .nova-symbol { width: 44px; height: 48px; font-size: 43px; }
-      .brand-name { font-size: 48px; letter-spacing: -2px; }
-      .brand-subtitle { font-size: 23px; }
-      .tagline { font-size: 13px; }
-      .tagline b { padding: 0 4px; }
-      .search-box { min-height: 61px; padding: 0 15px; gap: 10px; margin-bottom: 27px; }
-      .search-box input { font-size: 15px; }
-      .google-g { font-size: 26px; }
-      .quick-actions { grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; margin-bottom: 24px; }
-      .quick { min-height: 67px; border-radius: 20px; gap: 8px; }
-      .quick-icon { width: 39px; height: 39px; font-size: 21px; }
-      .quick strong { font-size: 13px; }
-      .quick:last-child { grid-column: 1 / -1; }
-      .cards { grid-template-columns: 1fr; gap: 13px; }
-      .card { min-height: 275px; padding: 22px; }
-      .companion { min-height: 260px; }
+    .message.user .bubble { background: #17325b; }
+    .message.error .bubble { border-color: #a54b5a; color: #ffc4cc; }
+    .composer { display: flex; align-items: flex-end; gap: 9px; }
+    textarea { resize: vertical; min-height: 52px; max-height: 180px; }
+    .hint { color: var(--muted); font-size: 12px; line-height: 1.6; margin: 10px 2px 0; }
+    .quick { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+    .quick button {
+      color: #d5e2f8; background: #18253a; border: 1px solid #34445e;
+      border-radius: 20px; padding: 8px 12px; font-size: 12px;
+    }
+    footer { text-align: center; color: #8090a9; font-size: 12px; padding: 24px 12px 35px; }
+    @media (max-width: 540px) {
+      header { padding: 12px 4%; }
+      main { margin-top: 20px; }
+      .search-card, .chat-card { padding: 12px; }
+      .search-row { flex-direction: column; }
+      .search-row .primary { width: 100%; }
+      .composer { align-items: stretch; }
+      .composer .primary { padding: 10px; }
+      #messages { min-height: 200px; }
     }
   </style>
 </head>
 <body>
   <header>
-    <div class="browser-bar">
-      <div class="tab"><span class="mini-logo"></span><span>NOVA AI Browser</span><span class="tab-close">×</span></div>
-      <span class="plus">＋</span>
-      <div class="window-controls"><span>−</span><span>□</span><span>×</span></div>
+    <div class="brand">
+      <div class="logo">N</div>
+      <div>
+        <h1>NOVA AI Browser</h1>
+        <p>Search smarter. Ask anything.</p>
+      </div>
     </div>
-    <div class="toolbar">
-      <span class="nav-icon" aria-hidden="true">‹</span>
-      <span class="nav-icon" aria-hidden="true">›</span>
-      <span class="nav-icon" aria-hidden="true">↻</span>
-      <form class="address" id="addressForm">
-        <span>◎</span><input id="addressInput" aria-label="Address bar" placeholder="Search or type a URL" autocomplete="off" />
-        <button class="icon-button" type="submit" aria-label="Go" style="font-size:17px">↵</button>
-      </form>
-      <nav class="top-links">
-        <button type="button" data-action="gmail"><b class="gmail-mark">M</b><span>Gmail</span></button>
-        <button type="button" data-action="images"><span class="image-mark">🌄</span><span>Images</span></button>
-        <button type="button" class="apps" aria-label="Google apps" data-action="apps">⠿</button>
-      </nav>
-    </div>
+    <div class="status" id="backendStatus">● Checking backend</div>
   </header>
 
   <main>
-    <section class="brand" aria-label="NOVA AI Browser">
-      <div class="brand-line">
-        <div class="nova-symbol" aria-hidden="true">N</div>
-        <div>
-          <h1 class="brand-name"><span>N</span><span>O</span><span>V</span><span>A</span></h1>
-          <div class="brand-subtitle">AI Browser</div>
+    <section class="hero">
+      <div class="tag">Your AI workspace</div>
+      <h2>Explore with <span style="color:#9b8aff">NOVA AI</span></h2>
+      <p>Search the web or chat with your chosen AI assistant.</p>
+    </section>
+
+    <section class="search-card">
+      <h3 class="section-title">🌐 Web Search</h3>
+      <form id="searchForm" class="search-row">
+        <input id="searchInput" type="search" placeholder="Search websites, news, information..." aria-label="Web search">
+        <button class="primary" type="submit">Search Web ↗</button>
+      </form>
+      <p class="hint">Web search opens search results in a new tab. AI chat is available below.</p>
+    </section>
+
+    <section class="chat-card">
+      <div class="chat-top">
+        <h3 class="section-title" style="margin:0">✦ NOVA AI Chat</h3>
+        <select id="provider" aria-label="Choose AI provider">
+          <option value="gemini">Gemini AI</option>
+          <option value="openai">ChatGPT (OpenAI)</option>
+        </select>
+      </div>
+
+      <div id="messages" aria-live="polite">
+        <div class="welcome" id="welcome">
+          <div style="font-size:30px">✧</div>
+          <strong>Welcome to NOVA AI</strong><br>
+          Type a question below and press Send.<br>
+          Choose Gemini or ChatGPT above.
         </div>
       </div>
-      <p class="tagline">Search <b>●</b> Explore <b>●</b> Ask <b>●</b> Create <b>●</b> Together</p>
-    </section>
 
-    <form class="search-box" id="searchForm" role="search">
-      <span class="google-g" aria-hidden="true">G</span>
-      <input id="searchInput" aria-label="Search Google or type a URL" placeholder="Search Google or type a URL" autocomplete="off" />
-      <button class="icon-button mic" type="button" data-action="voice" aria-label="Voice search" title="Voice search">🎙</button>
-      <button class="icon-button lens" type="button" data-action="lens" aria-label="Google Lens" title="Google Lens">▣</button>
-    </form>
-
-    <section class="quick-actions" aria-label="Quick actions">
-      <button class="quick blue" data-action="lens"><span class="quick-icon">▣</span><strong>Google Lens</strong></button>
-      <button class="quick purple" data-action="models"><span class="quick-icon">♧</span><strong>AI Models</strong></button>
-      <button class="quick green" data-action="chatgpt"><span class="quick-icon">◎</span><strong>Live ChatGPT</strong></button>
-      <button class="quick orange" data-action="gemini"><span class="quick-icon">✦</span><strong>Live Gemini</strong></button>
-      <button class="quick red" data-action="screen"><span class="quick-icon">▣</span><strong>Screen Sharing</strong></button>
-    </section>
-
-    <section class="cards" aria-label="AI services">
-      <article class="card green">
-        <div class="card-head"><div class="service-logo">◎</div><h2>ChatGPT</h2></div>
-        <p>Get instant answers, ideas, help and more.</p>
-        <div class="features">
-          <div class="feature"><span>🎙</span>Voice</div>
-          <div class="feature"><span>📷</span>Camera</div>
-          <div class="feature"><span>▣</span>Screen Share</div>
-          <div class="feature"><span>☷</span>Text</div>
+      <form id="chatForm">
+        <div class="composer">
+          <textarea id="messageInput" rows="2" placeholder="Type your message here..." aria-label="Type your message" required></textarea>
+          <button class="primary" id="sendButton" type="submit">Send ➤</button>
         </div>
-        <button class="open-button" data-action="chatgpt">Open ChatGPT&nbsp; →</button>
-      </article>
-
-      <article class="card blue">
-        <div class="card-head"><div class="service-logo">✦</div><h2>Gemini</h2></div>
-        <p>Think bigger. Get more done with Google's AI.</p>
-        <div class="features">
-          <div class="feature"><span>🎙</span>Voice</div>
-          <div class="feature"><span>📷</span>Camera</div>
-          <div class="feature"><span>▣</span>Screen Share</div>
-          <div class="feature"><span>▢</span>Tabs</div>
-        </div>
-        <button class="open-button" data-action="gemini">Open Gemini&nbsp; →</button>
-      </article>
-
-      <article class="card purple">
-        <div class="card-head"><div class="service-logo">▣</div><h2>Google Lens</h2></div>
-        <p>Search what you see. Get instant information.</p>
-        <div class="features">
-          <div class="feature"><span>▧</span>Image Search</div>
-          <div class="feature"><span>⌕</span>Visual Questions</div>
-        </div>
-        <button class="open-button" data-action="lens">Open Lens&nbsp; →</button>
-      </article>
-
-      <article class="card companion">
-        <div class="bot" aria-hidden="true">🤖</div>
-        <h2>Your AI Companion</h2>
-        <p>Smarter. Faster. Easier.</p>
-        <div class="features">
-          <div class="feature"><span>☏</span>Chat</div>
-          <div class="feature"><span>✦</span>Create</div>
-          <div class="feature"><span>◈</span>Explore</div>
-        </div>
-      </article>
+      </form>
+      <div class="quick">
+        <button type="button" data-prompt="Introduce yourself.">Introduce yourself</button>
+        <button type="button" data-prompt="Explain artificial intelligence in simple words.">Explain AI</button>
+        <button type="button" data-prompt="Help me write HTML code for a website.">Write HTML</button>
+      </div>
+      <p class="hint">Please do not enter passwords, bank details, or other sensitive information.</p>
     </section>
   </main>
-  <div class="bottom-wave" aria-hidden="true"></div>
-  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+  <footer>© <span id="year"></span> NOVA AI Browser · Powered by your Cloudflare Worker</footer>
 
   <script>
-    const destinations = {
-      chatgpt: "https://chatgpt.com/",
-      gemini: "https://gemini.google.com/",
-      lens: "https://lens.google.com/",
-      gmail: "https://mail.google.com/",
-      images: "https://images.google.com/",
-      apps: "https://www.google.com/intl/en/about/products"
-    };
-    const toast = document.getElementById("toast");
-    let toastTimer;
-    function notify(message) {
-      toast.textContent = message;
-      toast.classList.add("show");
-      clearTimeout(toastTimer);
-      toastTimer = setTimeout(() => toast.classList.remove("show"), 3200);
+    // Your deployed Cloudflare Worker
+    const WORKER_URL =
+      "https://withered-surf-afdbnova-ai-backend.maheshmas37.workers.dev";
+
+    const messagesBox = document.getElementById("messages");
+    const messageInput = document.getElementById("messageInput");
+    const sendButton = document.getElementById("sendButton");
+    const providerSelect = document.getElementById("provider");
+    const backendStatus = document.getElementById("backendStatus");
+
+    const conversation = [];
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    function addMessage(role, text, isError = false) {
+      const welcome = document.getElementById("welcome");
+      if (welcome) welcome.remove();
+
+      const wrapper = document.createElement("div");
+      wrapper.className = "message " + role + (isError ? " error" : "");
+
+      const who = document.createElement("div");
+      who.className = "who";
+      who.textContent = role === "user"
+        ? "YOU"
+        : isError ? "ERROR" : "NOVA AI";
+
+      const bubble = document.createElement("div");
+      bubble.className = "bubble";
+      bubble.textContent = text;
+
+      wrapper.append(who, bubble);
+      messagesBox.appendChild(wrapper);
+      messagesBox.scrollTop = messagesBox.scrollHeight;
+      return wrapper;
     }
-    function openDestination(url) {
-      window.open(url, "_blank", "noopener,noreferrer");
-    }
-    function runSearch(value) {
-      const query = value.trim();
-      if (!query) {
-        document.getElementById("searchInput").focus();
-        return;
+
+    async function checkBackend() {
+      try {
+        const response = await fetch(WORKER_URL + "/");
+        if (!response.ok) throw new Error("Backend unavailable");
+        const data = await response.json();
+        backendStatus.textContent = data.status === "ok"
+          ? "● Backend connected"
+          : "● Backend response received";
+        backendStatus.style.color = "#78e6b0";
+      } catch {
+        backendStatus.textContent = "● Backend connection issue";
+        backendStatus.style.color = "#ffb1b1";
       }
-      const looksLikeUrl = /^(https?:\/\/)/i.test(query) ||
-        (/^[\w-]+\.[a-z]{2,}([/:?#].*)?$/i.test(query) && !query.includes(" "));
-      openDestination(looksLikeUrl
-        ? (query.startsWith("http") ? query : "https://" + query)
-        : "https://www.google.com/search?q=" + encodeURIComponent(query));
     }
-    document.getElementById("searchForm").addEventListener("submit", event => {
-      event.preventDefault();
-      runSearch(document.getElementById("searchInput").value);
-    });
-    document.getElementById("addressForm").addEventListener("submit", event => {
-      event.preventDefault();
-      runSearch(document.getElementById("addressInput").value);
-    });
-    document.querySelectorAll("[data-action]").forEach(button => {
-      button.addEventListener("click", () => {
-        const action = button.dataset.action;
-        if (destinations[action]) {
-          openDestination(destinations[action]);
-        } else if (action === "models") {
-          notify("AI Models: choose ChatGPT or Gemini below to open the service.");
-          document.querySelector(".cards").scrollIntoView({ behavior: "smooth", block: "start" });
-        } else if (action === "voice") {
-          const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-          if (!SpeechRecognition) {
-            notify("Voice search isn't supported in this browser. Try Chrome or type your search.");
-            return;
-          }
-          const recognition = new SpeechRecognition();
-          recognition.lang = "en-IN";
-          recognition.onstart = () => notify("Listening… speak your search.");
-          recognition.onresult = event => {
-            const phrase = event.results[0][0].transcript;
-            document.getElementById("searchInput").value = phrase;
-            runSearch(phrase);
-          };
-          recognition.onerror = () => notify("Voice search could not start. Check microphone permission.");
-          recognition.start();
-        } else if (action === "screen") {
-          notify("Screen sharing needs a connected AI service. Open ChatGPT or Gemini and use its supported sharing controls.");
-          openDestination(destinations.chatgpt);
+
+    async function sendMessage(text) {
+      const message = text.trim();
+      if (!message || sendButton.disabled) return;
+
+      addMessage("user", message);
+      conversation.push({ role: "user", content: message });
+      messageInput.value = "";
+      sendButton.disabled = true;
+      sendButton.textContent = "Wait…";
+
+      const provider = providerSelect.value;
+
+      try {
+        const response = await fetch(WORKER_URL + "/api/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            provider,
+            messages: conversation.slice(-20)
+          })
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || data.error) {
+          throw new Error(data.error || "Request failed with status " + response.status);
         }
+
+        const reply = data.reply || data.response || data.text;
+        if (!reply) throw new Error("The AI returned an empty response.");
+
+        conversation.push({ role: "assistant", content: reply });
+        addMessage("assistant", reply);
+      } catch (error) {
+        // Keep the user's question, but remove it from history so it
+        // is not duplicated when they retry.
+        conversation.pop();
+        addMessage(
+          "assistant",
+          "Could not get a response.\n\n" + error.message +
+          "\n\nCheck your Cloudflare Worker, API Secret, model access, and API quota.",
+          true
+        );
+      } finally {
+        sendButton.disabled = false;
+        sendButton.textContent = "Send ➤";
+        messageInput.focus();
+      }
+    }
+
+    document.getElementById("chatForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      sendMessage(messageInput.value);
+    });
+
+    messageInput.addEventListener("keydown", (event) => {
+      if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        document.getElementById("chatForm").requestSubmit();
+      }
+    });
+
+    document.querySelectorAll("[data-prompt]").forEach((button) => {
+      button.addEventListener("click", () => {
+        messageInput.value = button.dataset.prompt;
+        messageInput.focus();
       });
     });
+
+    document.getElementById("searchForm").addEventListener("submit", (event) => {
+      event.preventDefault();
+      const query = document.getElementById("searchInput").value.trim();
+      if (!query) return;
+      window.open(
+        "https://www.google.com/search?q=" + encodeURIComponent(query),
+        "_blank",
+        "noopener,noreferrer"
+      );
+    });
+
+    checkBackend();
   </script>
 </body>
 </html>
