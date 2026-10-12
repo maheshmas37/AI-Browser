@@ -2,821 +2,524 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#080b16">
-  <meta name="description" content="NOVA AI Browser - Smart search, AI assistant, voice search and translation.">
-  <title>NOVA AI Browser</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="theme-color" content="#080b16">
+<meta name="description" content="NOVA AI Browser - AI assistant, web search, voice and translation.">
+<title>NOVA AI Browser</title>
 
-  <style>
-    :root {
-      --bg: #080b16;
-      --panel: #11172a;
-      --panel2: #171f36;
-      --text: #edf3ff;
-      --muted: #9baac8;
-      --blue: #6c8cff;
-      --cyan: #41e5ef;
-      --border: rgba(160, 183, 255, .17);
-    }
-
-    * { box-sizing: border-box; }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      color: var(--text);
-      background:
-        radial-gradient(ellipse at 15% 5%, #17254b 0, transparent 38%),
-        radial-gradient(ellipse at 90% 50%, #102a3d 0, transparent 35%),
-        var(--bg);
-      font-family: Inter, "Segoe UI", Arial, sans-serif;
-    }
-
-    button, input, select, textarea { font: inherit; }
-
-    button {
-      cursor: pointer;
-      transition: .2s ease;
-    }
-
-    button:hover { filter: brightness(1.13); }
-    button:disabled { opacity: .55; cursor: wait; }
-
-    .topbar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      padding: 18px 5%;
-      border-bottom: 1px solid var(--border);
-      background: rgba(8, 11, 22, .75);
-      backdrop-filter: blur(16px);
-      position: sticky;
-      top: 0;
-      z-index: 10;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      font-size: 22px;
-      font-weight: 800;
-      letter-spacing: 1.5px;
-    }
-
-    .logo {
-      display: grid;
-      place-items: center;
-      width: 42px;
-      height: 42px;
-      border-radius: 14px;
-      background: linear-gradient(135deg, var(--blue), var(--cyan));
-      color: #07101e;
-      box-shadow: 0 0 28px #41e5ef45;
-      font-size: 24px;
-    }
-
-    .brand small {
-      display: block;
-      margin-top: 3px;
-      color: var(--muted);
-      font-size: 10px;
-      letter-spacing: 3px;
-    }
-
-    .status {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      color: #91f5c4;
-      font-size: 12px;
-    }
-
-    .dot {
-      width: 8px;
-      height: 8px;
-      background: #57f4a7;
-      border-radius: 50%;
-      box-shadow: 0 0 10px #57f4a7;
-    }
-
-    main {
-      width: min(1100px, 92%);
-      margin: auto;
-      padding: 45px 0 60px;
-    }
-
-    .hero {
-      text-align: center;
-      padding: 24px 0 32px;
-    }
-
-    .eyebrow {
-      color: var(--cyan);
-      letter-spacing: 3px;
-      font-size: 12px;
-      font-weight: 700;
-    }
-
-    h1 {
-      font-size: clamp(36px, 6vw, 66px);
-      margin: 16px 0;
-      line-height: 1.08;
-      letter-spacing: -2px;
-    }
-
-    .gradient {
-      color: transparent;
-      background: linear-gradient(90deg, #8ea5ff, #45ecf1);
-      background-clip: text;
-      -webkit-background-clip: text;
-    }
-
-    .subtitle {
-      color: var(--muted);
-      line-height: 1.7;
-      max-width: 650px;
-      margin: 0 auto;
-    }
-
-    .searchbox {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      max-width: 780px;
-      margin: 28px auto 12px;
-      padding: 8px;
-      border: 1px solid #6c8cff70;
-      border-radius: 18px;
-      background: rgba(17, 23, 42, .95);
-      box-shadow: 0 0 40px #4d7dff16;
-    }
-
-    .searchbox input {
-      min-width: 0;
-      flex: 1;
-      padding: 14px;
-      color: white;
-      background: transparent;
-      border: 0;
-      outline: 0;
-    }
-
-    .searchbox input::placeholder { color: #8492af; }
-
-    .btn {
-      border: 0;
-      border-radius: 12px;
-      padding: 12px 17px;
-      color: white;
-      background: var(--panel2);
-    }
-
-    .btn.primary {
-      color: #07101e;
-      font-weight: 800;
-      background: linear-gradient(120deg, #8ea5ff, #41e5ef);
-    }
-
-    .hint {
-      color: var(--muted);
-      font-size: 12px;
-      text-align: center;
-      margin-bottom: 28px;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 18px;
-      margin-top: 24px;
-    }
-
-    .card {
-      min-width: 0;
-      padding: 23px;
-      border: 1px solid var(--border);
-      border-radius: 20px;
-      background: linear-gradient(145deg, #141b30ed, #0d1323ed);
-      box-shadow: 0 12px 35px #00000018;
-    }
-
-    .cardhead {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 15px;
-    }
-
-    .cardicon {
-      display: grid;
-      place-items: center;
-      width: 44px;
-      height: 44px;
-      flex-shrink: 0;
-      border: 1px solid var(--border);
-      border-radius: 13px;
-      background: #6c8cff17;
-      font-size: 22px;
-    }
-
-    h2 { margin: 0; font-size: 19px; }
-    .card p { color: var(--muted); font-size: 13px; line-height: 1.6; }
-
-    .field {
-      width: 100%;
-      padding: 13px 14px;
-      margin: 6px 0 10px;
-      color: var(--text);
-      background: #080d1a;
-      border: 1px solid var(--border);
-      border-radius: 11px;
-      outline: none;
-    }
-
-    .field:focus { border-color: var(--cyan); }
-
-    select.field option {
-      color: white;
-      background: #11172a;
-    }
-
-    .wide { width: 100%; }
-
-    .chatlog {
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-      min-height: 145px;
-      max-height: 340px;
-      overflow-y: auto;
-      padding: 12px;
-      margin: 14px 0;
-      border: 1px solid var(--border);
-      border-radius: 13px;
-      background: #080d19a8;
-    }
-
-    .message {
-      max-width: 94%;
-      padding: 11px 13px;
-      border-radius: 12px;
-      font-size: 14px;
-      line-height: 1.6;
-      white-space: pre-wrap;
-      overflow-wrap: anywhere;
-    }
-
-    .message.assistant {
-      align-self: flex-start;
-      color: #dce8ff;
-      background: #192541;
-    }
-
-    .message.user {
-      align-self: flex-end;
-      color: #081221;
-      background: linear-gradient(120deg, #91a7ff, #65e7e9);
-    }
-
-    .chatform {
-      display: flex;
-      gap: 8px;
-    }
-
-    .chatform .field {
-      flex: 1;
-      min-width: 0;
-      margin: 0;
-    }
-
-    .result {
-      padding: 13px;
-      min-height: 46px;
-      color: #d8e5ff;
-      background: #080d19;
-      border: 1px solid var(--border);
-      border-radius: 11px;
-      line-height: 1.7;
-      font-size: 14px;
-      white-space: pre-wrap;
-      overflow-wrap: anywhere;
-    }
-
-    .quicklinks {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 10px;
-      margin: 20px 0 0;
-    }
-
-    .quicklinks button {
-      padding: 9px 14px;
-      color: #c9d7fa;
-      background: #121b30;
-      border: 1px solid var(--border);
-      border-radius: 20px;
-    }
-
-    .footer {
-      padding: 22px;
-      border-top: 1px solid var(--border);
-      color: var(--muted);
-      font-size: 12px;
-      text-align: center;
-    }
-
-    @media (max-width: 700px) {
-      .topbar { padding: 13px 4%; }
-      .brand { font-size: 18px; }
-      main { padding-top: 24px; }
-      .grid { grid-template-columns: 1fr; }
-      .searchbox { flex-wrap: wrap; }
-      .searchbox input { flex-basis: 65%; }
-      .searchbox .btn { flex: 1; }
-      .card { padding: 18px; }
-      .status { font-size: 10px; }
-      h1 { letter-spacing: -1px; }
-    }
-  </style>
+<style>
+:root {
+  --bg:#080b16; --panel:#11172a; --panel2:#171f36;
+  --text:#edf3ff; --muted:#9baac8; --blue:#6c8cff;
+  --cyan:#41e5ef; --border:rgba(160,183,255,.17);
+}
+* { box-sizing:border-box; }
+body {
+  margin:0; min-height:100vh; color:var(--text);
+  background:radial-gradient(ellipse at 15% 5%,#17254b 0,transparent 38%),
+  radial-gradient(ellipse at 90% 50%,#102a3d 0,transparent 35%),var(--bg);
+  font-family:Inter,"Segoe UI",Arial,sans-serif;
+}
+button,input,select,textarea { font:inherit; }
+button { cursor:pointer; transition:.2s; }
+button:hover { filter:brightness(1.13); }
+button:disabled { opacity:.55; cursor:wait; }
+.topbar {
+  display:flex; align-items:center; justify-content:space-between; gap:16px;
+  padding:18px 5%; border-bottom:1px solid var(--border);
+  background:#080b16d9; position:sticky; top:0; z-index:10;
+  backdrop-filter:blur(16px);
+}
+.brand { display:flex; align-items:center; gap:12px; font-size:22px; font-weight:800; letter-spacing:1.5px; }
+.logo {
+  display:grid; place-items:center; width:42px; height:42px;
+  border-radius:14px; background:linear-gradient(135deg,var(--blue),var(--cyan));
+  color:#07101e; font-size:24px; box-shadow:0 0 28px #41e5ef45;
+}
+.brand small { display:block; margin-top:3px; color:var(--muted); font-size:10px; letter-spacing:3px; }
+.status { display:flex; align-items:center; gap:8px; color:#91f5c4; font-size:12px; }
+.dot { width:8px; height:8px; background:#57f4a7; border-radius:50%; box-shadow:0 0 10px #57f4a7; }
+main { width:min(1100px,92%); margin:auto; padding:45px 0 60px; }
+.hero { text-align:center; padding:24px 0 32px; }
+.eyebrow { color:var(--cyan); letter-spacing:3px; font-size:12px; font-weight:700; }
+h1 { font-size:clamp(36px,6vw,66px); margin:16px 0; line-height:1.08; letter-spacing:-2px; }
+.gradient {
+  color:transparent; background:linear-gradient(90deg,#8ea5ff,#45ecf1);
+  background-clip:text; -webkit-background-clip:text;
+}
+.subtitle { color:var(--muted); line-height:1.7; max-width:650px; margin:0 auto; }
+.searchbox {
+  display:flex; align-items:center; gap:10px; max-width:780px;
+  margin:28px auto 12px; padding:8px; border:1px solid #6c8cff70;
+  border-radius:18px; background:#11172af2; box-shadow:0 0 40px #4d7dff16;
+}
+.searchbox input { min-width:0; flex:1; padding:14px; color:white; background:transparent; border:0; outline:0; }
+.searchbox input::placeholder { color:#8492af; }
+.btn { border:0; border-radius:12px; padding:12px 17px; color:white; background:var(--panel2); }
+.btn.primary { color:#07101e; font-weight:800; background:linear-gradient(120deg,#8ea5ff,#41e5ef); }
+.hint { color:var(--muted); font-size:12px; text-align:center; margin-bottom:28px; }
+.grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; margin-top:24px; }
+.card {
+  min-width:0; padding:23px; border:1px solid var(--border); border-radius:20px;
+  background:linear-gradient(145deg,#141b30ed,#0d1323ed); box-shadow:0 12px 35px #00000018;
+}
+.cardhead { display:flex; align-items:center; gap:12px; margin-bottom:15px; }
+.cardicon {
+  display:grid; place-items:center; width:44px; height:44px; flex-shrink:0;
+  border:1px solid var(--border); border-radius:13px; background:#6c8cff17; font-size:22px;
+}
+h2 { margin:0; font-size:19px; }
+.card p { color:var(--muted); font-size:13px; line-height:1.6; }
+.field {
+  width:100%; padding:13px 14px; margin:6px 0 10px; color:var(--text);
+  background:#080d1a; border:1px solid var(--border); border-radius:11px; outline:none;
+}
+.field:focus { border-color:var(--cyan); }
+select.field option { color:white; background:#11172a; }
+.wide { width:100%; }
+.chatlog {
+  display:flex; flex-direction:column; gap:12px; min-height:145px; max-height:340px;
+  overflow-y:auto; padding:12px; margin:14px 0;
+  border:1px solid var(--border); border-radius:13px; background:#080d19a8;
+}
+.message {
+  max-width:94%; padding:11px 13px; border-radius:12px;
+  font-size:14px; line-height:1.6; white-space:pre-wrap; overflow-wrap:anywhere;
+}
+.message.assistant { align-self:flex-start; color:#dce8ff; background:#192541; }
+.message.user { align-self:flex-end; color:#081221; background:linear-gradient(120deg,#91a7ff,#65e7e9); }
+.chatform { display:flex; gap:8px; }
+.chatform .field { flex:1; min-width:0; margin:0; }
+.result {
+  padding:13px; min-height:46px; color:#d8e5ff; background:#080d19;
+  border:1px solid var(--border); border-radius:11px; line-height:1.7;
+  font-size:14px; white-space:pre-wrap; overflow-wrap:anywhere;
+}
+.quicklinks { display:flex; flex-wrap:wrap; justify-content:center; gap:10px; margin:20px 0 0; }
+.quicklinks button {
+  padding:9px 14px; color:#c9d7fa; background:#121b30;
+  border:1px solid var(--border); border-radius:20px;
+}
+.footer { padding:22px; border-top:1px solid var(--border); color:var(--muted); font-size:12px; text-align:center; }
+@media(max-width:700px) {
+  .topbar { padding:13px 4%; }
+  .brand { font-size:18px; }
+  main { padding-top:24px; }
+  .grid { grid-template-columns:1fr; }
+  .searchbox { flex-wrap:wrap; }
+  .searchbox input { flex-basis:65%; }
+  .searchbox .btn { flex:1; }
+  .card { padding:18px; }
+  .status { font-size:10px; }
+  h1 { letter-spacing:-1px; }
+}
+</style>
 </head>
 
 <body>
-  <header class="topbar">
-    <div class="brand">
-      <div class="logo">✦</div>
-      <div>
-        NOVA AI
-        <small>SMART BROWSER</small>
-      </div>
+<header class="topbar">
+  <div class="brand">
+    <div class="logo">✦</div>
+    <div>NOVA AI<small>SMART BROWSER</small></div>
+  </div>
+  <div class="status"><span class="dot"></span><span>AI BROWSER</span></div>
+</header>
+
+<main>
+<section class="hero">
+  <div class="eyebrow">YOUR NEXT-GENERATION ASSISTANT</div>
+  <h1>Explore Beyond<br><span class="gradient">The Ordinary.</span></h1>
+  <p class="subtitle">Search the web, ask AI questions, use voice input and translate text from one smart interface.</p>
+
+  <form class="searchbox" id="searchForm">
+    <span aria-hidden="true">⌕</span>
+    <input id="searchInput" type="search" placeholder="Search anything on the web..." required>
+    <button class="btn" id="voiceButton" type="button" title="Voice search" aria-label="Voice search">🎙</button>
+    <button class="btn primary" type="submit">Search ↗</button>
+  </form>
+  <div class="hint" id="voiceStatus">Search powered by Google · Click the microphone to speak</div>
+
+  <div class="quicklinks">
+    <button type="button" data-query="Artificial intelligence">🤖 AI</button>
+    <button type="button" data-query="Latest technology news">🌐 Technology</button>
+    <button type="button" data-query="Computer and laptop repair">💻 Computers</button>
+    <button type="button" data-query="Learn programming online">⌨ Coding</button>
+  </div>
+</section>
+
+<section class="grid">
+  <article class="card">
+    <div class="cardhead">
+      <div class="cardicon">✦</div>
+      <div><h2>AI Assistant</h2><p>Ask a question and get an AI-generated answer.</p></div>
     </div>
-    <div class="status">
-      <span class="dot"></span>
-      <span>AI BROWSER</span>
+
+    <label for="language">Response language</label>
+    <select class="field" id="language">
+      <option value="English">English</option>
+      <option value="Telugu" selected>తెలుగు (Telugu)</option>
+      <option value="Hindi">हिन्दी (Hindi)</option>
+      <option value="Kannada">ಕನ್ನಡ (Kannada)</option>
+      <option value="Tamil">தமிழ் (Tamil)</option>
+      <option value="Malayalam">മലയാളം (Malayalam)</option>
+      <option value="Bengali">বাংলা (Bengali)</option>
+      <option value="Marathi">मराठी (Marathi)</option>
+      <option value="Spanish">Spanish</option>
+      <option value="French">French</option>
+      <option value="Arabic">Arabic</option>
+    </select>
+
+    <div class="chatlog" id="chatLog" aria-live="polite">
+      <div class="message assistant">నమస్కారం! నేను NOVA AI. మీ ప్రశ్న అడగండి.
+Hello! I am NOVA AI. Ask me anything.</div>
     </div>
-  </header>
 
-  <main>
-    <section class="hero">
-      <div class="eyebrow">YOUR NEXT-GENERATION ASSISTANT</div>
-      <h1>Explore Beyond<br><span class="gradient">The Ordinary.</span></h1>
-      <p class="subtitle">
-        Search the web, ask AI questions, use voice input and translate text
-        from one smart interface.
-      </p>
+    <form class="chatform" id="chatForm">
+      <input class="field" id="chatInput" autocomplete="off" placeholder="Ask NOVA anything..." required>
+      <button class="btn primary" id="sendButton" type="submit">Send</button>
+    </form>
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
+      <button class="btn" id="speakAgainButton" type="button">🔊 Speak Last Reply</button>
+      <button class="btn" id="stopSpeechButton" type="button">⏹ Stop Voice</button>
+    </div>
+    <p id="voiceReplyStatus" aria-live="polite">Automatic voice reply is ON. Voice availability depends on your browser and installed voices.</p>
+    <p>AI responses require an active Cloudflare Worker and Gemini API secret.</p>
+  </article>
 
-      <form class="searchbox" id="searchForm">
-        <span aria-hidden="true">⌕</span>
-        <input id="searchInput" type="search"
-          placeholder="Search anything on the web..." required>
-        <button class="btn" id="voiceButton" type="button"
-          title="Voice search" aria-label="Voice search">🎙</button>
-        <button class="btn primary" type="submit">Search ↗</button>
-      </form>
-      <div class="hint" id="voiceStatus">
-        Search powered by Google · Click the microphone to speak
-      </div>
+  <article class="card">
+    <div class="cardhead">
+      <div class="cardicon">⇄</div>
+      <div><h2>AI Translator</h2><p>Translate text using your connected AI backend.</p></div>
+    </div>
+    <label for="translateInput">Text to translate</label>
+    <textarea class="field" id="translateInput" rows="4" placeholder="Enter text here..."></textarea>
+    <label for="targetLanguage">Translate into</label>
+    <select class="field" id="targetLanguage">
+      <option>Telugu</option><option>English</option><option>Hindi</option>
+      <option>Kannada</option><option>Tamil</option><option>Malayalam</option>
+      <option>Spanish</option><option>French</option><option>Arabic</option>
+    </select>
+    <button class="btn primary wide" id="translateButton" type="button">Translate Text</button>
+    <div style="height:12px"></div>
+    <div class="result" id="translateResult" aria-live="polite">Your translation will appear here.</div>
+    <div style="height:10px"></div>
+    <button class="btn wide" id="copyTranslation" type="button">Copy Translation</button>
+  </article>
 
-      <div class="quicklinks">
-        <button type="button" data-query="Artificial intelligence">🤖 AI</button>
-        <button type="button" data-query="Latest technology news">🌐 Technology</button>
-        <button type="button" data-query="Computer and laptop repair">💻 Computers</button>
-        <button type="button" data-query="Learn programming online">⌨ Coding</button>
-      </div>
-    </section>
+  <article class="card">
+    <div class="cardhead">
+      <div class="cardicon">🌐</div>
+      <div><h2>Web Explorer</h2><p>Quickly open popular websites.</p></div>
+    </div>
+    <button class="btn wide" type="button" data-url="https://www.google.com">🔎 Google Search</button>
+    <div style="height:10px"></div>
+    <button class="btn wide" type="button" data-url="https://www.youtube.com">▶ YouTube</button>
+    <div style="height:10px"></div>
+    <button class="btn wide" type="button" data-url="https://github.com">💻 GitHub</button>
+    <div style="height:10px"></div>
+    <button class="btn wide" type="button" data-url="https://www.wikipedia.org">📚 Wikipedia</button>
+  </article>
 
-    <section class="grid">
-      <article class="card">
-        <div class="cardhead">
-          <div class="cardicon">✦</div>
-          <div>
-            <h2>AI Assistant</h2>
-            <p>Ask a question and get an AI-generated answer.</p>
-          </div>
-        </div>
+  <article class="card">
+    <div class="cardhead">
+      <div class="cardicon">⚙</div>
+      <div><h2>Browser Settings</h2><p>Check your browser capabilities.</p></div>
+    </div>
+    <div class="result" id="browserInfo">Checking browser...</div>
+    <div style="height:12px"></div>
+    <button class="btn wide" id="testBackend" type="button">Test AI Backend</button>
+    <div style="height:10px"></div>
+    <div class="result" id="backendStatus" aria-live="polite">Backend status has not been checked.</div>
+  </article>
+</section>
+</main>
 
-        <label for="language">Response language</label>
-        <select class="field" id="language">
-          <option value="English">English</option>
-          <option value="Telugu" selected>తెలుగు (Telugu)</option>
-          <option value="Hindi">हिन्दी (Hindi)</option>
-          <option value="Kannada">ಕನ್ನಡ (Kannada)</option>
-          <option value="Tamil">தமிழ் (Tamil)</option>
-          <option value="Malayalam">മലയാളം (Malayalam)</option>
-          <option value="Bengali">বাংলা (Bengali)</option>
-          <option value="Marathi">मराठी (Marathi)</option>
-          <option value="Spanish">Spanish</option>
-          <option value="French">French</option>
-          <option value="Arabic">Arabic</option>
-        </select>
+<footer class="footer">
+  NOVA AI Browser · Smart search · AI assistant · Translation
+  <br><br>
+  AI answers are generated by the connected AI service. Verify important information.
+</footer>
 
-        <div class="chatlog" id="chatLog" aria-live="polite">
-          <div class="message assistant">
-            నమస్కారం! నేను NOVA AI. మీ ప్రశ్న అడగండి.
-            Hello! I am NOVA AI. Ask me anything.
-          </div>
-        </div>
+<script>
+"use strict";
 
-        <form class="chatform" id="chatForm">
-          <input class="field" id="chatInput" autocomplete="off"
-            placeholder="Ask NOVA anything..." required>
-          <button class="btn primary" id="sendButton" type="submit">
-            Send
-          </button>
-        </form>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;margin-top:10px">
-          <button class="btn" id="speakAgainButton" type="button">🔊 Speak Last Reply</button>
-          <button class="btn" id="stopSpeechButton" type="button">⏹ Stop Voice</button>
-        </div>
-        <p id="voiceReplyStatus" aria-live="polite">Automatic voice reply is ON. Voice availability depends on your browser and installed voices.</p>
-        <p>AI responses require an active Cloudflare Worker and Gemini API secret.</p>
-      </article>
+// IMPORTANT: Use the /api/chat endpoint.
+// Never put your Gemini API key in this HTML file.
+const API_URL =
+  "https://withered-surf-afdbnova-ai-backend.maheshmas37.workers.dev/api/chat";
 
-      <article class="card">
-        <div class="cardhead">
-          <div class="cardicon">⇄</div>
-          <div>
-            <h2>AI Translator</h2>
-            <p>Translate text using your connected AI backend.</p>
-          </div>
-        </div>
+const $ = (id) => document.getElementById(id);
 
-        <label for="translateInput">Text to translate</label>
-        <textarea class="field" id="translateInput" rows="4"
-          placeholder="Enter text here..."></textarea>
+async function askAI(message) {
+  let response;
 
-        <label for="targetLanguage">Translate into</label>
-        <select class="field" id="targetLanguage">
-          <option>Telugu</option>
-          <option>English</option>
-          <option>Hindi</option>
-          <option>Kannada</option>
-          <option>Tamil</option>
-          <option>Malayalam</option>
-          <option>Spanish</option>
-          <option>French</option>
-          <option>Arabic</option>
-        </select>
+  try {
+    response = await fetch(API_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message })
+    });
+  } catch (error) {
+    throw new Error("Network/CORS error. Check the Worker URL and CORS settings.");
+  }
 
-        <button class="btn primary wide" id="translateButton" type="button">
-          Translate Text
-        </button>
+  let data;
+  try {
+    data = await response.json();
+  } catch {
+    throw new Error("The backend returned an invalid response.");
+  }
 
-        <div style="height:12px"></div>
-        <div class="result" id="translateResult" aria-live="polite">
-          Your translation will appear here.
-        </div>
-        <div style="height:10px"></div>
-        <button class="btn wide" id="copyTranslation" type="button">
-          Copy Translation
-        </button>
-      </article>
+  if (!response.ok) {
+    throw new Error(
+      data.details || data.error || ("HTTP error " + response.status)
+    );
+  }
 
-      <article class="card">
-        <div class="cardhead">
-          <div class="cardicon">🌐</div>
-          <div>
-            <h2>Web Explorer</h2>
-            <p>Quickly open popular websites.</p>
-          </div>
-        </div>
-        <button class="btn wide" type="button" data-url="https://www.google.com">
-          🔎 Google Search
-        </button>
-        <div style="height:10px"></div>
-        <button class="btn wide" type="button" data-url="https://www.youtube.com">
-          ▶ YouTube
-        </button>
-        <div style="height:10px"></div>
-        <button class="btn wide" type="button" data-url="https://github.com">
-          💻 GitHub
-        </button>
-        <div style="height:10px"></div>
-        <button class="btn wide" type="button" data-url="https://www.wikipedia.org">
-          📚 Wikipedia
-        </button>
-      </article>
+  if (!data.answer) {
+    throw new Error("The AI returned an empty answer.");
+  }
 
-      <article class="card">
-        <div class="cardhead">
-          <div class="cardicon">⚙</div>
-          <div>
-            <h2>Browser Settings</h2>
-            <p>Check your browser capabilities.</p>
-          </div>
-        </div>
-        <div class="result" id="browserInfo">Checking browser...</div>
-        <div style="height:12px"></div>
-        <button class="btn wide" id="testBackend" type="button">
-          Test AI Backend
-        </button>
-        <div style="height:10px"></div>
-        <div class="result" id="backendStatus" aria-live="polite">
-          Backend status has not been checked.
-        </div>
-      </article>
-    </section>
-  </main>
+  return data.answer;
+}
 
-  <footer class="footer">
-    NOVA AI Browser · Smart search · AI assistant · Translation
-    <br><br>
-    AI answers are generated by the connected AI service. Verify important information.
-  </footer>
+// Google web search
+$("searchForm").addEventListener("submit", (event) => {
+  event.preventDefault();
+  const query = $("searchInput").value.trim();
+  if (!query) return;
 
-  <script>
-    "use strict";
+  window.open(
+    "https://www.google.com/search?q=" + encodeURIComponent(query),
+    "_blank",
+    "noopener,noreferrer"
+  );
+});
 
-    // Your Cloudflare Worker URL. Never put your Gemini API key here.
-    const API_URL =
-      "https://withered-surf-afdbnova-ai-backend.maheshmas37.workers.dev/";
+document.querySelectorAll("[data-query]").forEach((button) => {
+  button.addEventListener("click", () => {
+    $("searchInput").value = button.dataset.query;
+    $("searchForm").requestSubmit();
+  });
+});
 
-    const $ = (id) => document.getElementById(id);
+document.querySelectorAll("[data-url]").forEach((button) => {
+  button.addEventListener("click", () => {
+    window.open(button.dataset.url, "_blank", "noopener,noreferrer");
+  });
+});
 
-    async function askAI(message) {
-      const response = await fetch(API_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ message })
-      });
+// Voice search
+$("voiceButton").addEventListener("click", () => {
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
 
-      let data;
-      try {
-        data = await response.json();
-      } catch {
-        throw new Error("The backend returned an invalid response.");
-      }
+  if (!SpeechRecognition) {
+    $("voiceStatus").textContent =
+      "Voice search is not supported in this browser. Try Google Chrome.";
+    return;
+  }
 
-      if (!response.ok) {
-        throw new Error(
-          data.details || data.error || ("HTTP error " + response.status)
-        );
-      }
+  const recognition = new SpeechRecognition();
+  recognition.lang = "en-IN";
+  recognition.interimResults = false;
+  recognition.maxAlternatives = 1;
+  $("voiceStatus").textContent = "Listening... Speak now.";
 
-      if (!data.answer) {
-        throw new Error("The AI returned an empty answer.");
-      }
+  recognition.onresult = (event) => {
+    const transcript = event.results[0][0].transcript;
+    $("searchInput").value = transcript;
+    $("voiceStatus").textContent = "Voice captured: " + transcript;
+  };
 
-      return data.answer;
+  recognition.onerror = (event) => {
+    $("voiceStatus").textContent =
+      "Voice search error: " + event.error + ". Check microphone permission.";
+  };
+
+  recognition.onend = () => {
+    if ($("voiceStatus").textContent === "Listening... Speak now.") {
+      $("voiceStatus").textContent = "Voice search ended.";
     }
+  };
 
-    // Web search
-    $("searchForm").addEventListener("submit", (event) => {
-      event.preventDefault();
-      const query = $("searchInput").value.trim();
-      if (!query) return;
+  try {
+    recognition.start();
+  } catch {
+    $("voiceStatus").textContent = "Could not start voice recognition. Try again.";
+  }
+});
 
-      window.open(
-        "https://www.google.com/search?q=" + encodeURIComponent(query),
-        "_blank",
-        "noopener,noreferrer"
-      );
-    });
+// Voice reply
+let lastAIReply = "";
 
-    document.querySelectorAll("[data-query]").forEach((button) => {
-      button.addEventListener("click", () => {
-        $("searchInput").value = button.dataset.query;
-        $("searchForm").requestSubmit();
-      });
-    });
+function getSpeechLocale() {
+  const locales = {
+    English:"en-IN", Telugu:"te-IN", Hindi:"hi-IN",
+    Kannada:"kn-IN", Tamil:"ta-IN", Malayalam:"ml-IN",
+    Bengali:"bn-IN", Marathi:"mr-IN", Spanish:"es-ES",
+    French:"fr-FR", Arabic:"ar-SA"
+  };
+  return locales[$("language").value] || "en-IN";
+}
 
-    document.querySelectorAll("[data-url]").forEach((button) => {
-      button.addEventListener("click", () => {
-        window.open(button.dataset.url, "_blank", "noopener,noreferrer");
-      });
-    });
+function speakReply(text) {
+  if (!("speechSynthesis" in window) || !text) {
+    $("voiceReplyStatus").textContent = "Voice output is not supported in this browser.";
+    return;
+  }
 
-    // Voice search (browser support varies)
-    $("voiceButton").addEventListener("click", () => {
-      const SpeechRecognition =
-        window.SpeechRecognition || window.webkitSpeechRecognition;
+  window.speechSynthesis.cancel();
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = getSpeechLocale();
+  utterance.rate = 1;
+  utterance.pitch = 1;
 
-      if (!SpeechRecognition) {
-        $("voiceStatus").textContent =
-          "Voice search is not supported in this browser. Try Google Chrome.";
-        return;
-      }
+  const prefix = utterance.lang.toLowerCase().split("-")[0];
+  const voice = window.speechSynthesis.getVoices().find((v) =>
+    v.lang && v.lang.toLowerCase().startsWith(prefix)
+  );
+  if (voice) utterance.voice = voice;
 
-      const recognition = new SpeechRecognition();
-      recognition.lang = "en-IN";
-      recognition.interimResults = false;
-      recognition.maxAlternatives = 1;
+  utterance.onstart = () => {
+    $("voiceReplyStatus").textContent = "Speaking reply (" + utterance.lang + ")...";
+  };
+  utterance.onend = () => {
+    $("voiceReplyStatus").textContent = "Voice reply finished.";
+  };
+  utterance.onerror = (event) => {
+    $("voiceReplyStatus").textContent = "Voice playback error: " + event.error;
+  };
 
-      $("voiceStatus").textContent = "Listening... Speak now.";
+  window.speechSynthesis.speak(utterance);
+}
 
-      recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        $("searchInput").value = transcript;
-        $("voiceStatus").textContent = "Voice captured: " + transcript;
-      };
+$("speakAgainButton").addEventListener("click", () => {
+  if (lastAIReply) speakReply(lastAIReply);
+  else $("voiceReplyStatus").textContent = "There is no AI reply to play yet.";
+});
 
-      recognition.onerror = (event) => {
-        $("voiceStatus").textContent =
-          "Voice search error: " + event.error +
-          ". Check microphone permission.";
-      };
+$("stopSpeechButton").addEventListener("click", () => {
+  if ("speechSynthesis" in window) window.speechSynthesis.cancel();
+  $("voiceReplyStatus").textContent = "Voice playback stopped.";
+});
 
-      recognition.onend = () => {
-        if ($("voiceStatus").textContent === "Listening... Speak now.") {
-          $("voiceStatus").textContent = "Voice search ended.";
-        }
-      };
+// Chat messages
+function addMessage(type, content) {
+  const element = document.createElement("div");
+  element.className = "message " + type;
+  element.textContent = content;
+  $("chatLog").appendChild(element);
+  $("chatLog").scrollTop = $("chatLog").scrollHeight;
+  return element;
+}
 
-      recognition.start();
-    });
+// AI Assistant
+$("chatForm").addEventListener("submit", async (event) => {
+  event.preventDefault();
 
-    // AI voice reply using the browser's built-in Text-to-Speech.
-    let lastAIReply = "";
-    let voiceReplyEnabled = true;
+  const input = $("chatInput");
+  const question = input.value.trim();
+  if (!question) return;
 
-    function getSpeechLocale() {
-      const language = $("language").value;
-      const locales = {
-        English: "en-IN",
-        Telugu: "te-IN",
-        Hindi: "hi-IN",
-        Kannada: "kn-IN",
-        Tamil: "ta-IN",
-        Malayalam: "ml-IN",
-        Bengali: "bn-IN",
-        Marathi: "mr-IN",
-        Spanish: "es-ES",
-        French: "fr-FR",
-        Arabic: "ar-SA"
-      };
-      return locales[language] || "en-IN";
-    }
+  const language = $("language").value;
+  addMessage("user", question);
+  input.value = "";
 
-    function speakReply(text) {
-      if (!("speechSynthesis" in window) || !text) {
-        $("voiceReplyStatus").textContent =
-          "Voice output is not supported in this browser. Try Google Chrome.";
-        return;
-      }
+  const reply = addMessage("assistant", "NOVA AI is thinking...");
+  $("sendButton").disabled = true;
 
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = getSpeechLocale();
-      utterance.rate = 1;
-      utterance.pitch = 1;
+  try {
+    reply.textContent = await askAI(
+      "Answer in " + language +
+      ". Be helpful and clear. User question: " + question
+    );
+    lastAIReply = reply.textContent;
+    speakReply(lastAIReply);
+  } catch (error) {
+    reply.textContent =
+      "Could not connect to NOVA AI: " + error.message +
+      "\n\nCheck that the Cloudflare Worker is deployed and GEMINI_API_KEY is configured.";
+  } finally {
+    $("sendButton").disabled = false;
+    $("chatLog").scrollTop = $("chatLog").scrollHeight;
+    input.focus();
+  }
+});
 
-      const voices = window.speechSynthesis.getVoices();
-      const localePrefix = utterance.lang.toLowerCase().split("-")[0];
-      const matchingVoice = voices.find((voice) =>
-        voice.lang && voice.lang.toLowerCase().startsWith(localePrefix)
-      );
-      if (matchingVoice) utterance.voice = matchingVoice;
+// AI Translator
+$("translateButton").addEventListener("click", async () => {
+  const inputText = $("translateInput").value.trim();
+  const target = $("targetLanguage").value;
+  const button = $("translateButton");
 
-      utterance.onstart = () => {
-        $("voiceReplyStatus").textContent =
-          "Speaking reply (" + utterance.lang + ")...";
-      };
-      utterance.onend = () => {
-        $("voiceReplyStatus").textContent =
-          "Voice reply finished. You can replay it with Speak Last Reply.";
-      };
-      utterance.onerror = (event) => {
-        $("voiceReplyStatus").textContent =
-          "Voice playback error: " + event.error +
-          ". Check Chrome sound and available language voices.";
-      };
+  if (!inputText) {
+    $("translateResult").textContent = "Please enter text to translate.";
+    return;
+  }
 
-      window.speechSynthesis.speak(utterance);
-    }
+  button.disabled = true;
+  $("translateResult").textContent = "Translating...";
 
-    $("speakAgainButton").addEventListener("click", () => {
-      if (lastAIReply) {
-        speakReply(lastAIReply);
-      } else {
-        $("voiceReplyStatus").textContent = "There is no AI reply to play yet.";
-      }
-    });
+  try {
+    const result = await askAI(
+      "Translate the following text into " + target +
+      ". Return only the translation, without explanations:\n\n" + inputText
+    );
+    $("translateResult").textContent = result;
+  } catch (error) {
+    $("translateResult").textContent = "Translation failed: " + error.message;
+  } finally {
+    button.disabled = false;
+  }
+});
 
-    $("stopSpeechButton").addEventListener("click", () => {
-      if ("speechSynthesis" in window) window.speechSynthesis.cancel();
-      $("voiceReplyStatus").textContent = "Voice playback stopped.";
-    });
+$("copyTranslation").addEventListener("click", async () => {
+  const result = $("translateResult").textContent;
 
-    // AI Assistant
-    function addMessage(type, content) {
-      const message = document.createElement("div");
-      message.className = "message " + type;
-      message.textContent = content;
-      $("chatLog").appendChild(message);
-      $("chatLog").scrollTop = $("chatLog").scrollHeight;
-      return message;
-    }
+  try {
+    await navigator.clipboard.writeText(result);
+    $("copyTranslation").textContent = "Copied!";
+    setTimeout(() => {
+      $("copyTranslation").textContent = "Copy Translation";
+    }, 1500);
+  } catch {
+    $("translateResult").textContent +=
+      "\n\nCopy is unavailable. Select and copy the text manually.";
+  }
+});
 
-    $("chatForm").addEventListener("submit", async (event) => {
-      event.preventDefault();
+// Test AI backend by making a real POST request
+$("testBackend").addEventListener("click", async () => {
+  const button = $("testBackend");
+  const status = $("backendStatus");
 
-      const input = $("chatInput");
-      const question = input.value.trim();
-      if (!question) return;
+  button.disabled = true;
+  status.textContent = "Testing AI connection...";
 
-      const language = $("language").value;
-      addMessage("user", question);
-      input.value = "";
+  try {
+    const answer = await askAI(
+      "Reply with exactly: NOVA AI connection successful."
+    );
+    status.textContent = "Connected successfully.\n" + answer;
+  } catch (error) {
+    status.textContent = "Connection failed.\n" + error.message;
+  } finally {
+    button.disabled = false;
+  }
+});
 
-      const reply = addMessage("assistant", "NOVA AI is thinking...");
-      $("sendButton").disabled = true;
-
-      try {
-        reply.textContent = await askAI(
-          "Answer in " + language +
-          ". Be helpful and clear. User question: " + question
-        );
-        lastAIReply = reply.textContent;
-        if (voiceReplyEnabled) speakReply(lastAIReply);
-      } catch (error) {
-        reply.textContent =
-          "Could not connect to NOVA AI: " + error.message +
-          "\n\nCheck that the Cloudflare Worker is deployed and the Gemini API secret is configured.";
-      } finally {
-        $("sendButton").disabled = false;
-        $("chatLog").scrollTop = $("chatLog").scrollHeight;
-        input.focus();
-      }
-    });
-
-    // AI Translator
-    $("translateButton").addEventListener("click", async () => {
-      const text = $("translateInput").value.trim();
-      const target = $("targetLanguage").value;
-      const button = $("translateButton");
-
-      if (!text) {
-        $("translateResult").textContent = "Please enter text to translate.";
-        return;
-      }
-
-      button.disabled = true;
-      $("translateResult").textContent = "Translating...";
-
-      try {
-        const result = await askAI(
-          "Translate the following text into " + target +
-          ". Return only the translation, without explanations:\n\n" + text
-        );
-        $("translateResult").textContent = result;
-      } catch (error) {
-        $("translateResult").textContent =
-          "Translation failed: " + error.message;
-      } finally {
-        button.disabled = false;
-      }
-    });
-
-    $("copyTranslation").addEventListener("click", async () => {
-      const result = $("translateResult").textContent;
-
-      try {
-        await navigator.clipboard.writeText(result);
-        $("copyTranslation").textContent = "Copied!";
-        setTimeout(() => {
-          $("copyTranslation").textContent = "Copy Translation";
-        }, 1500);
-      } catch {
-        $("translateResult").textContent +=
-          "\n\nCopy is unavailable. Please select and copy the text manually.";
-      }
-    });
-
-    // Backend connection test
-    $("testBackend").addEventListener("click", async () => {
-      const button = $("testBackend");
-      const status = $("backendStatus");
-
-      button.disabled = true;
-      status.textContent = "Testing AI connection...";
-
-      try {
-        const answer = await askAI(
-          "Reply with exactly: NOVA AI connection successful."
-        );
-        status.textContent = "Connected successfully.\n" + answer;
-      } catch (error) {
-        status.textContent = "Connection failed.\n" + error.message;
-      } finally {
-        button.disabled = false;
-      }
-    });
-
-    // Browser capability information
-    $("browserInfo").textContent =
-      "Browser: " + navigator.userAgent +
-      "\nVoice input: " +
-      ((window.SpeechRecognition || window.webkitSpeechRecognition)
-        ? "Supported" : "Not detected") +
-      "\nVoice output: " +
-      (("speechSynthesis" in window) ? "Supported" : "Not detected") +
-      "\nSecure connection: " +
-      (window.isSecureContext ? "Yes" : "No");
-  </script>
+// Browser capabilities
+$("browserInfo").textContent =
+  "Browser: " + navigator.userAgent +
+  "\nVoice input: " +
+  ((window.SpeechRecognition || window.webkitSpeechRecognition)
+    ? "Supported" : "Not detected") +
+  "\nVoice output: " +
+  (("speechSynthesis" in window) ? "Supported" : "Not detected") +
+  "\nSecure connection: " +
+  (window.isSecureContext ? "Yes" : "No");
+</script>
 </body>
 </html>
